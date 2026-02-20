@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  omnimind-backend:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      # Pass environment variables or use a .env file
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - RUNWAYML_API_SECRET=${RUNWAYML_API_SECRET}
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload

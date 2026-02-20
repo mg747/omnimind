@@ -1,0 +1,62 @@
+import 'package:dio/dio.dart';
+import 'dart:async';
+
+class ApiService {
+  final Dio _dio = Dio(BaseOptions(
+    baseUrl: 'http://localhost:8000', // Emulator/Localhost
+    connectTimeout: const Duration(seconds: 10),
+    receiveTimeout: const Duration(seconds: 10),
+  ));
+
+  // Singleton pattern
+  static final ApiService _instance = ApiService._internal();
+  factory ApiService() => _instance;
+  ApiService._internal();
+
+  /// Starts or resumes a simulation session
+  Future<Map<String, dynamic>> startSimulation() async {
+    try {
+      final response = await _dio.get('/simulation/start');
+      return response.data;
+    } catch (e) {
+      print('Error starting simulation: $e');
+      rethrow;
+    }
+  }
+
+  /// Sends a user action to the backend
+  Future<Map<String, dynamic>> performAction(String action, List<String> inventory) async {
+    try {
+      final response = await _dio.post('/simulation/action', data: {
+        'action': action,
+        'inventory': inventory,
+      });
+      return response.data;
+    } catch (e) {
+      print('Error performing action: $e');
+      rethrow;
+    }
+  }
+
+  /// Polls the status of a video generation task
+  Stream<String> pollAssetStatus(String taskId) async* {
+    while (true) {
+      try {
+        final response = await _dio.get('/assets/status/$taskId');
+        final status = response.data['status'];
+        
+        if (status == 'SUCCEEDED') {
+          yield response.data['output'][0]; // URL
+          break;
+        } else if (status == 'FAILED') {
+          throw Exception('Asset generation failed: ${response.data['error']}');
+        }
+        
+        await Future.delayed(const Duration(seconds: 2));
+      } catch (e) {
+        print('Polling error: $e');
+        break; 
+      }
+    }
+  }
+}

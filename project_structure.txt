@@ -1,0 +1,28 @@
+omnimind/
+├── backend/
+│   ├── main.py                 # FastAPI entry point
+│   ├── asset_pipeline.py       # Runway Gen-3 Alpha API integration
+│   ├── simulation_generator.py # Logic engine (LangChain stub)
+│   ├── database.py             # DB connection (Pinecone/Postgres)
+│   ├── requirements.txt        # Python dependencies
+│   ├── .env                    # API keys (Runway, OpenAI, Pinecone)
+│   └── cache/                  # Local asset cache (for development)
+│
+├── frontend/
+│   ├── lib/
+│   │   ├── main.dart           # App entry point
+│   │   ├── services/
+│   │   │   ├── api_service.dart    # Backend communication
+│   │   │   └── cache_service.dart  # Video file caching
+│   │   ├── widgets/
+│   │   │   └── holographic_display.dart # Reusable video widget
+│   │   └── screens/
+│   │       └── simulation_screen.dart
+│   ├── assets/                 # Static fallback video/gifs
+│   └── pubspec.yaml            # Flutter dependencies
+│
+├── docs/
+│   ├── cost_optimization.md    # Strategy for API usage
+│   └── architecture.md         # System design
+│
+└── README.md

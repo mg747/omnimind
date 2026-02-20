@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OGCHALLENGE | AI-Powered Critical Thinking</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Orbitron:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #09090b;
+            --bg-card: #13131a;
+            --primary: #8b5cf6;
+            --secondary: #3b82f6;
+            --accent: #f43f5e;
+            --gold: #fbbf24;
+            --text-main: #ffffff;
+            --text-dim: #9ca3af;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Ambient Glow */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(139, 92, 246, 0.1), rgba(9, 9, 11, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(9, 9, 11, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            /* Fix lint */
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-item {
+            cursor: pointer;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            color: white;
+        }
+
+        .nav-item.premium {
+            color: var(--gold);
+        }
+
+        /* VIEW CONTAINER */
+        .view-section {
+            display: none;
+            /* Hidden by default */
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .view-section.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* HERO / DASHBOARD */
+        .hero-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .hero-header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            font-family: 'Orbitron';
+        }
+
+        .hero-header p {
+            color: var(--text-dim);
+            font-size: 1.2rem;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            width: 100%;
+        }
+
+        .category-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .category-card h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .category-card p {
+            margin: 0;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .category-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .premium-lock {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: var(--gold);
+            background: rgba(251, 191, 36, 0.1);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* QUIZ INTERFACE */
+        .quiz-container {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .quiz-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-badge {
+            background: var(--primary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            line-height: 1.4;
+            margin-bottom: 30px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: left;
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .option-btn:hover {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: var(--primary);
+        }
+
+        .option-btn.correct {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+        }
+
+        .option-btn.wrong {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+        }
+
+        .explanation-box {
+            margin-top: 30px;
+            background: rgba(139, 92, 246, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+            /* Hidden initially */
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal {
+            background: #1a1a24;
+            padding: 40px;
+            border-radius: 24px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid var(--gold);
+            box-shadow: 0 0 50px rgba(251, 191, 36, 0.2);
+            position: relative;
+        }
+
+        .modal h2 {
+            color: var(--gold);
+            font-family: 'Orbitron';
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .price-tag {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .sub-price {
+            font-size: 1rem;
+            color: var(--text-dim);
+        }
+
+        .pay-btn {
+            background: var(--gold);
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        /* LOADING */
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 50px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV -->
+    <nav>
+        <div class="logo" onclick="switchView('dashboard')">
+            <i class="fas fa-brain fa-lg" style="color: var(--primary);"></i>
+            OGCHALLENGE
+        </div>
+        <div class="nav-links">
+            <div class="nav-item active" onclick="switchView('dashboard')">Home</div>
+            <div class="nav-item" onclick="switchView('simulation')">Cinematic Mode</div>
+            <div class="nav-item" onclick="openSettings()"><i class="fas fa-cog"></i> Config</div>
+            <div class="nav-item premium" onclick="showPremiumModal()"><i class="fas fa-crown"></i> Premium</div>
+        </div>
+    </nav>
+
+    <!-- DASHBOARD VIEW -->
+    <section id="dashboard" class="view-section active">
+        <div class="hero-header">
+            <h1>CHALLENGE YOUR MIND</h1>
+            <p>Select a category to generate a unique AI-powered challenge.</p>
+        </div>
+
+        <div class="category-grid">
+            <!-- Free Categories -->
+            <div class="category-card" onclick="generateChallenge('Future Tech')">
+                <i class="fas fa-robot category-icon"></i>
+                <h3>Future Tech</h3>
+                <p>Singularity, AI Ethics, Cybernetics</p>
+            </div>
+            <div class="category-card" onclick="generateChallenge('Simulation Theory')">
+                <i class="fas fa-vr-cardboard category-icon"></i>
+                <h3>Simulation Theory</h3>
+                <p>Glitches, Reality, Determinism</p>
+            </div>
+            <div class="category-card" onclick="generateChallenge('Spy Mission')">
+                <i class="fas fa-user-secret category-icon"></i>
+                <h3>Spy Mission</h3>
+                <p>Espionage, Cryptography, Stealth</p>
+            </div>
+            <div class="category-card" onclick="generateChallenge('Detective Mystery')">
+                <i class="fas fa-magnifying-glass category-icon"></i>
+                <h3>Detective Mystery</h3>
+                <p>Deduction, Evidence, Crime</p>
+            </div>
+            <div class="category-card" onclick="generateChallenge('Escape Room')">
+                <i class="fas fa-door-open category-icon"></i>
+                <h3>Escape Room</h3>
+                <p>Logic Puzzles, Riddles, Time</p>
+            </div>
+            <div class="category-card" onclick="generateChallenge('Survival')">
+                <i class="fas fa-campground category-icon"></i>
+                <h3>Survival</h3>
+                <p>Wilderness, Resource Management</p>
+            </div>
+
+            <!-- More Free Categories -->
+            <div class="category-card" onclick="generateChallenge('Mind Bender')">
+                <i class="fas fa-brain category-icon"></i>
+                <h3>Mind Bender</h3>
+                <p>Paradoxes, Logic Loops, Abstract</p>
+            </div>
+            <div class="category-card" onclick="generateChallenge('Conspiracy')">
+                <i class="fas fa-user-secret category-icon"></i>
+                <h3>Conspiracy</h3>
+                <p>Hidden Truths, Cover-ups, Aliens</p>
+            </div>
+            <div class="category-card" onclick="generateChallenge('Time Travel')">
+                <i class="fas fa-hourglass-half category-icon"></i>
+                <h3>Time Travel</h3>
+                <p>Butterly Effect, Loops, Paradox</p>
+            </div>
+
+            <!-- Premium Categories -->
+            <div class="category-card" onclick="checkPremium('Physics')">
+                <div class="premium-lock"><i class="fas fa-lock"></i> Premium</div>
+                <i class="fas fa-atom category-icon" style="color: var(--gold)"></i>
+                <h3>Deep Physics</h3>
+                <p>Quantum Mechanics, Astrophysics</p>
+            </div>
+            <div class="category-card" onclick="checkPremium('Adult')">
+                <div class="premium-lock"><i class="fas fa-lock"></i> 18+</div>
+                <i class="fas fa-heart category-icon" style="color: var(--accent)"></i>
+                <h3>Relationships</h3>
+                <p>Psychology, Dynamics, Modern Dating</p>
+            </div>
+            <div class="category-card" onclick="checkPremium('Wealth')">
+                <div class="premium-lock"><i class="fas fa-lock"></i> Premium</div>
+                <i class="fas fa-coins category-icon" style="color: var(--gold)"></i>
+                <h3>Wealth Mastery</h3>
+                <p>Finance, Strategy, Economics</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUIZ VIEW -->
+    <section id="quiz-view" class="view-section">
+        <div class="quiz-container">
+            <div id="quiz-loader" class="loader"></div>
+
+            <div id="quiz-content" style="display: none;">
+                <div class="quiz-header">
+                    <span class="quiz-badge" id="quiz-topic">TOPIC</span>
+                    <span style="float: right; color: var(--text-dim);">Difficulty: <span id="difficulty-display"
+                            style="color: var(--primary)">Calibrating...</span></span>
+                </div>
+
+                <div class="question-text" id="quiz-question"></div>
+
+                <div class="options-list" id="quiz-options">
+                    <!-- Options injected here -->
+                </div>
+
+                <div class="explanation-box" id="quiz-explanation">
+                    <h3 id="result-title">Insight</h3>
+                    <p id="explanation-text"></p>
+                    <button class="cta-button" onclick="switchView('dashboard')"
+                        style="margin-top: 15px; background: transparent; border: 1px solid var(--primary); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Next
+                        Challenge</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CINEMATIC SIMULATION VIEW (iframe/embed or simpler div) -->
+    <section id="simulation" class="view-section" style="text-align: center;">
+        <div class="hero-header">
+            <h1>CINEMATIC MODE</h1>
+            <p>Immersive Narrative Experience powered by Runway Gen-3</p>
+            <br>
+            <!-- Reusing the old terminal UI inside this container would be ideal, but for now just a placeholder link or basic rebuild -->
+            <p style="color: var(--accent)">[ SYSTEM NOTE: Please use the Flutter App for the full 3D Holographic
+                Experience ]</p>
+            <a href="#" onclick="alert('Launch Flutter App for best experience'); return false;"
+                style="color: var(--primary);">Open App Protocol</a>
+        </div>
+    </section>
+
+    <!-- SETTINGS MODAL -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal">
+            <div class="close-modal" onclick="closeSettings()">&times;</div>
+            <i class="fas fa-cog fa-2x" style="color: var(--text-dim); margin-bottom: 20px;"></i>
+            <h2>SYSTEM CONFIG</h2>
+            <p>Enter your API Keys to unlock the full AI Core.</p>
+
+            <div style="text-align: left; margin-top: 20px;">
+                <label style="display: block; color: var(--text-dim); margin-bottom: 5px;">OpenAI API Key
+                    (Logic)</label>
+                <input type="password" id="openai-key" placeholder="sk-..." style="width: 100%; margin-bottom: 15px;">
+
+                <label style="display: block; color: var(--text-dim); margin-bottom: 5px;">RunwayML API Secret
+                    (Video)</label>
+                <input type="password" id="runway-key" placeholder="key_..." style="width: 100%;">
+            </div>
+
+            <button class="pay-btn" onclick="saveSettings()"
+                style="background: var(--primary); color: white;">INITIALIZE SYSTEM</button>
+        </div>
+    </div>
+
+    <!-- PREMIUM MODAL -->
+    <div class="modal-overlay" id="premium-modal">
+        <div class="modal">
+            <div class="close-modal" onclick="closeModal()">&times;</div>
+            <i class="fas fa-crown fa-3x" style="color: var(--gold); margin-bottom: 20px;"></i>
+            <h2>OG PREMIUM</h2>
+            <p>Unlock Advanced Challenges: Physics, Biology, Politics, Relationships (18+), and more.</p>
+
+            <div class="price-tag">€1.99<span class="sub-price">/week</span></div>
+
+            <button class="pay-btn" onclick="alert('Redirecting to Stripe/Apple Pay...')"><i class="fab fa-apple"></i>
+                <i class="fab fa-google-pay"></i> Pay Now</button>
+            <p style="margin-top: 15px; font-size: 0.8rem; color: var(--text-dim);">Cancel anytime. Secure payment.</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:8000";
+        let currentChallenge = null;
+        let userLevel = 1; // Simple adaptive difficulty score
+        let currentDifficulty = "Medium";
+
+        // Navigation
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        }
+
+        // Settings Logic
+        function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
+        function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
+
+        async function saveSettings() {
+            const openai = document.getElementById('openai-key').value;
+            const runway = document.getElementById('runway-key').value;
+
+            if (!openai && !runway) return;
+
+            try {
+                await fetch(`${API_URL}/settings/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ openai_key: openai, runway_key: runway })
+                });
+                alert("System Initialized. Reloading Core...");
+                location.reload();
+            } catch (e) {
+                alert("Failed to save settings: " + e);
+            }
+        }
+
+        // Premium Logic
+        function checkPremium(topic) {
+            if (topic === 'Adult') {
+                if (!confirm("Age Verification: Are you over 18?")) return;
+            }
+            showPremiumModal();
+        }
+
+        function showPremiumModal() {
+            document.getElementById('premium-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('premium-modal').style.display = 'none';
+        }
+
+        // Generator Logic
+        async function generateChallenge(topic) {
+            switchView('quiz-view');
+            document.getElementById('quiz-content').style.display = 'none';
+            document.getElementById('quiz-loader').style.display = 'block';
+
+            // Adaptive Logic
+            if (userLevel > 2) currentDifficulty = "Hard";
+            else if (userLevel < 0) currentDifficulty = "Easy";
+            else currentDifficulty = "Medium";
+
+            document.getElementById('difficulty-display').innerText = currentDifficulty;
+
+            try {
+                const res = await fetch(`${API_URL}/challenges/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topic: topic, difficulty: currentDifficulty, is_premium: false })
+                });
+                const data = await res.json();
+                renderQuiz(data, topic);
+            } catch (e) {
+                alert("Error generating challenge. Ensure backend is running.");
+                switchView('dashboard');
+            }
+        }
+
+        function renderQuiz(data, topic) {
+            currentChallenge = data;
+            document.getElementById('quiz-loader').style.display = 'none';
+            document.getElementById('quiz-content').style.display = 'block';
+            document.getElementById('quiz-explanation').style.display = 'none';
+
+            document.getElementById('quiz-topic').innerText = topic;
+            document.getElementById('quiz-question').innerText = data.scenario || data.scenario; // fallback
+
+            const optionsDiv = document.getElementById('quiz-options');
+            optionsDiv.innerHTML = '';
+
+            data.options.forEach(opt => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                btn.innerHTML = `<span style="font-weight:bold; color:var(--primary)">${opt.id}.</span> ${opt.text}`;
+                btn.onclick = () => submitAnswer(opt.id, btn);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function submitAnswer(selectedId, btnElement) {
+            // Disable all buttons
+            document.querySelectorAll('.option-btn').forEach(b => b.style.pointerEvents = 'none');
+
+            // Check Answer
+            const isCorrect = selectedId === currentChallenge.correct_option_id;
+            const resultTitle = document.getElementById('result-title');
+
+            if (isCorrect) {
+                btnElement.classList.add('correct');
+                resultTitle.innerHTML = '<span style="color:#22c55e"><i class="fas fa-check"></i> Correct</span>';
+                userLevel++; // Increase difficulty
+            } else {
+                btnElement.classList.add('wrong');
+                resultTitle.innerHTML = '<span style="color:#ef4444"><i class="fas fa-times"></i> Incorrect</span>';
+                userLevel = Math.max(0, userLevel - 1); // Decrease difficulty
+            }
+
+            // Show Explanation
+            const expBox = document.getElementById('quiz-explanation');
+            document.getElementById('explanation-text').innerText = currentChallenge.explanation;
+            expBox.style.display = 'block';
+            expBox.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+
+</html>
