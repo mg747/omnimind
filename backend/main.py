@@ -107,6 +107,7 @@ async def get_asset_status(task_id: str):
 class SettingsRequest(BaseModel):
     openai_key: Optional[str] = None
     runway_key: Optional[str] = None
+    pinecone_key: Optional[str] = None
 
 @app.post("/settings/update")
 async def update_settings(req: SettingsRequest):
@@ -131,6 +132,9 @@ async def update_settings(req: SettingsRequest):
     if req.runway_key:
         env_vars["RUNWAYML_API_SECRET"] = req.runway_key
         os.environ["RUNWAYML_API_SECRET"] = req.runway_key
+    if req.pinecone_key:
+        env_vars["PINECONE_API_KEY"] = req.pinecone_key
+        os.environ["PINECONE_API_KEY"] = req.pinecone_key
         
     # Write back
     with open(env_path, "w") as f:

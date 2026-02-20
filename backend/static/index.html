@@ -347,6 +347,106 @@
             font-size: 1.5rem;
         }
 
+        /* SIMULATION VIEW */
+        .simulation-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .video-container {
+            width: 100%;
+            height: 400px;
+            background: #000;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .hologram-placeholder {
+            text-align: center;
+            color: var(--primary);
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            from {
+                text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+            }
+
+            to {
+                text-shadow: 0 0 20px rgba(139, 92, 246, 1);
+            }
+        }
+
+        .narrative-box {
+            background: rgba(19, 19, 26, 0.8);
+            border-left: 4px solid var(--secondary);
+            padding: 25px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .action-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .action-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .custom-action-box {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .custom-action-box input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .custom-action-box button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Orbitron';
+        }
+
         /* LOADING */
         .loader {
             border: 4px solid rgba(255, 255, 255, 0.1);
@@ -491,17 +591,28 @@
         </div>
     </section>
 
-    <!-- CINEMATIC SIMULATION VIEW (iframe/embed or simpler div) -->
-    <section id="simulation" class="view-section" style="text-align: center;">
-        <div class="hero-header">
-            <h1>CINEMATIC MODE</h1>
-            <p>Immersive Narrative Experience powered by Runway Gen-3</p>
-            <br>
-            <!-- Reusing the old terminal UI inside this container would be ideal, but for now just a placeholder link or basic rebuild -->
-            <p style="color: var(--accent)">[ SYSTEM NOTE: Please use the Flutter App for the full 3D Holographic
-                Experience ]</p>
-            <a href="#" onclick="alert('Launch Flutter App for best experience'); return false;"
-                style="color: var(--primary);">Open App Protocol</a>
+    <!-- CINEMATIC SIMULATION VIEW -->
+    <section id="simulation" class="view-section">
+        <div class="simulation-container">
+            <div id="sim-video-container" class="video-container">
+                <div class="hologram-placeholder" id="sim-video-status">
+                    <i class="fas fa-satellite-dish fa-3x" style="margin-bottom: 20px;"></i>
+                    <p>Awaiting Visual Data...</p>
+                </div>
+            </div>
+
+            <div class="narrative-box">
+                <p id="sim-narrative-text">Initializing Neural Link...</p>
+            </div>
+
+            <div class="action-options" id="sim-options">
+                <!-- Options injected here -->
+            </div>
+
+            <div class="custom-action-box">
+                <input type="text" id="custom-action-input" placeholder="Enter custom action...">
+                <button onclick="submitSimAction(document.getElementById('custom-action-input').value)">Execute</button>
+            </div>
         </div>
     </section>
 
@@ -520,7 +631,11 @@
 
                 <label style="display: block; color: var(--text-dim); margin-bottom: 5px;">RunwayML API Secret
                     (Video)</label>
-                <input type="password" id="runway-key" placeholder="key_..." style="width: 100%;">
+                <input type="password" id="runway-key" placeholder="key_..." style="width: 100%; margin-bottom: 15px;">
+
+                <label style="display: block; color: var(--text-dim); margin-bottom: 5px;">Pinecone API Key
+                    (Memory)</label>
+                <input type="password" id="pinecone-key" placeholder="pc-..." style="width: 100%;">
             </div>
 
             <button class="pay-btn" onclick="saveSettings()"
@@ -555,6 +670,10 @@
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            if (viewId === 'simulation') {
+                startSimulation();
+            }
         }
 
         // Settings Logic
@@ -564,14 +683,15 @@
         async function saveSettings() {
             const openai = document.getElementById('openai-key').value;
             const runway = document.getElementById('runway-key').value;
+            const pinecone = document.getElementById('pinecone-key').value;
 
-            if (!openai && !runway) return;
+            if (!openai && !runway && !pinecone) return;
 
             try {
                 await fetch(`${API_URL}/settings/update`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ openai_key: openai, runway_key: runway })
+                    body: JSON.stringify({ openai_key: openai, runway_key: runway, pinecone_key: pinecone })
                 });
                 alert("System Initialized. Reloading Core...");
                 location.reload();
@@ -667,6 +787,71 @@
             document.getElementById('explanation-text').innerText = currentChallenge.explanation;
             expBox.style.display = 'block';
             expBox.scrollIntoView({ behavior: 'smooth' });
+        }
+        // --- SIMULATION LOGIC ---
+        let simInventory = [];
+
+        async function startSimulation() {
+            document.getElementById('sim-narrative-text').innerText = "Establishing connection...";
+            document.getElementById('sim-options').innerHTML = '';
+            document.getElementById('sim-video-status').innerHTML = '<i class="fas fa-satellite-dish fa-3x" style="margin-bottom: 20px;"></i><p>Calibrating Visuals...</p>';
+
+            try {
+                const res = await fetch(`${API_URL}/simulation/start`);
+                const data = await res.json();
+                renderSimulationState(data);
+            } catch (e) {
+                document.getElementById('sim-narrative-text').innerText = "Connection Failed. Is the backend running?";
+            }
+        }
+
+        async function submitSimAction(action) {
+            if (!action || action.trim() === '') return;
+
+            document.getElementById('custom-action-input').value = '';
+            document.getElementById('sim-narrative-text').innerText = `Processing action: [${action}]...`;
+            document.getElementById('sim-options').innerHTML = '';
+            document.getElementById('sim-video-status').innerHTML = '<i class="fas fa-cog fa-spin fa-3x" style="margin-bottom: 20px;"></i><p>Processing New Reality...</p>';
+
+            try {
+                const res = await fetch(`${API_URL}/simulation/action`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: action, inventory: simInventory })
+                });
+                const data = await res.json();
+                renderSimulationState(data);
+            } catch (e) {
+                document.getElementById('sim-narrative-text').innerText = "Neural Sync Lost. Retrying...";
+            }
+        }
+
+        function renderSimulationState(state) {
+            document.getElementById('sim-narrative-text').innerText = state.message;
+
+            const optionsDiv = document.getElementById('sim-options');
+            optionsDiv.innerHTML = '';
+            if (state.options && state.options.length > 0) {
+                state.options.forEach(opt => {
+                    const btn = document.createElement('div');
+                    btn.className = 'action-btn';
+                    btn.innerText = opt;
+                    btn.onclick = () => submitSimAction(opt);
+                    optionsDiv.appendChild(btn);
+                });
+            }
+
+            // Mock Assets UI logic
+            if (state.assets && state.assets.length > 0) {
+                document.getElementById('sim-video-status').innerHTML = '<i class="fas fa-video fa-3x" style="margin-bottom: 20px;"></i><p>Generating Video Asset...</p>';
+
+                // Fake a loading delay to show asset generated
+                setTimeout(() => {
+                    document.getElementById('sim-video-status').innerHTML = `<i class="fas fa-play-circle fa-3x" style="margin-bottom: 20px; color: var(--gold);"></i><p>Asset Ready: ${state.assets[0].prompt || 'Video'}</p>`;
+                }, 1500);
+            } else {
+                document.getElementById('sim-video-status').innerHTML = '<i class="fas fa-satellite-dish fa-3x" style="margin-bottom: 20px;"></i><p>Standby.</p>';
+            }
         }
     </script>
 </body>
