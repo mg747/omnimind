@@ -60,3 +60,5 @@ flutter run
 - **"Asset Generation Failed"**: ensure you have valid credits in RunwayML.
 - **"LLM Offline"**: check `OPENAI_API_KEY` in `backend/.env`.
 - **"Connection Refused"**: Ensure `api_service.dart` points to the correct IP (`localhost` vs `10.0.2.2` for Android).
+## OmniMind Update
+The application has been successfully updated to "Intelligence for All". Cloud AI parsing (Groq) and Memory Context Retrieval (Pinecone) are actively supporting the backend simulation generation!
