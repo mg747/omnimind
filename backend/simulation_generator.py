@@ -1,20 +1,21 @@
-from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
 from database import Database
 from typing import Dict, List
 import json
 import os
+import re
 
 class SimulationGenerator:
     def __init__(self):
         self.db = Database()
-        # Initialize LLM only if key is present
-        api_key = os.getenv("OPENAI_API_KEY")
+        # Initialize LLM only if Groq key is present
+        api_key = os.getenv("GROQ_API_KEY")
         if api_key:
-            self.llm = ChatOpenAI(model="gpt-4-turbo", temperature=0.7)
+            self.llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0.7)
         else:
-            print("Warning: OPENAI_API_KEY not set. Using fallback logic.")
+            print("Warning: GROQ_API_KEY not set. Using fallback logic.")
             self.llm = None
         
         self.session_id = "demo_session" # In prod, this would be dynamic
@@ -60,10 +61,24 @@ class SimulationGenerator:
                     "inventory": ", ".join(inventory),
                     "action": action
                 })
-                # Parse JSON (robustness needed here in prod)
-                # Removing markdown code blocks if present
-                clean_json = response_str.replace("```json", "").replace("```", "").strip()
-                result = json.loads(clean_json)
+                # Robust JSON parsing
+                import re
+                
+                # Strip markdown code blocks if present
+                clean_json = response_str.strip()
+                if clean_json.startswith("```json"):
+                    clean_json = clean_json[7:]
+                if clean_json.startswith("```"):
+                    clean_json = clean_json[3:]
+                if clean_json.endswith("```"):
+                    clean_json = clean_json[:-3]
+                    
+                match = re.search(r'\{.*\}', clean_json, re.DOTALL)
+                if match:
+                    clean_json_extracted = match.group(0)
+                    result = json.loads(clean_json_extracted)
+                else:
+                    raise ValueError("No JSON block found in response.")
                 
                 # Save new memory
                 self.db.save_memory(self.session_id, f"Action: {action} -> Result: {result['message']}")
@@ -81,7 +96,7 @@ class SimulationGenerator:
             "message": f"You performed: {action}. (LLM Offline)",
             "options": ["Continue"],
             "difficulty_score": 1.0,
-            "assets": []
+            "assets": [{"type": "video", "prompt": action}]
         }
 
     def get_current_state(self) -> Dict:
@@ -90,5 +105,5 @@ class SimulationGenerator:
              "message": "System Online. Awaiting input.",
              "options": ["Look around"],
              "difficulty_score": 1,
-             "assets": []
+             "assets": [{"type": "video", "prompt": "Futuristic control room"}]
         }

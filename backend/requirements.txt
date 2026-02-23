@@ -6,3 +6,8 @@ pydantic
 langchain
 langchain-openai
 pinecone-client
+langchain-community
+
+langchain-groq
+langchain-huggingface
+

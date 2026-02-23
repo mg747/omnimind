@@ -1,16 +1,19 @@
-from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
 import json
 import os
 import random
+import re
 
 class ChallengeGenerator:
     def __init__(self):
-        api_key = os.getenv("OPENAI_API_KEY")
+        # Groq Cloud API integration
+        api_key = os.getenv("GROQ_API_KEY")
         if api_key:
-            self.llm = ChatOpenAI(model="gpt-4-turbo", temperature=0.8)
+            self.llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0.8)
         else:
+            print("Warning: GROQ_API_KEY not set.")
             self.llm = None
 
     def generate_challenge(self, topic: str, difficulty: str, is_premium: bool = False):
@@ -44,8 +47,13 @@ class ChallengeGenerator:
         
         try:
             response = chain.invoke({"topic": topic, "difficulty": difficulty})
-            clean_json = response.replace("```json", "").replace("```", "").strip()
-            return json.loads(clean_json)
+            # Robust JSON extraction
+            match = re.search(r'\{.*\}', response, re.DOTALL)
+            if match:
+                clean_json = match.group(0)
+                return json.loads(clean_json)
+            else:
+                raise ValueError("No JSON block found in response.")
         except Exception as e:
             print(f"Error generating challenge: {e}")
             return self._fallback_challenge(topic)

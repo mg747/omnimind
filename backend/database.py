@@ -2,19 +2,19 @@ import os
 import time
 from typing import List, Dict, Optional
 from pinecone import Pinecone, ServerlessSpec
-from langchain_openai import OpenAIEmbeddings
+from langchain_pinecone import PineconeEmbeddings
 
 class Database:
     def __init__(self):
         self.api_key = os.getenv("PINECONE_API_KEY")
         self.env = os.getenv("PINECONE_ENV", "us-east-1")
-        self.index_name = "omnimind-memory"
+        self.index_name = "omnimind-memory-pinecone" # New index for 1024 dimensions
         
         if self.api_key:
             self.pc = Pinecone(api_key=self.api_key)
             self._initialize_index()
             self.index = self.pc.Index(self.index_name)
-            self.embeddings = OpenAIEmbeddings(api_key=os.getenv("OPENAI_API_KEY"))
+            self.embeddings = PineconeEmbeddings(model="multilingual-e5-large", pinecone_api_key=self.api_key)
         else:
             print("Warning: PINECONE_API_KEY not set. Running in stateless mode.")
             self.index = None
@@ -27,7 +27,7 @@ class Database:
         if self.index_name not in existing_indexes:
             self.pc.create_index(
                 name=self.index_name,
-                dimension=1536, # OpenAI embedding dimension
+                dimension=1024, # Pinecone multilingual-e5-large embedding dimension
                 metric="cosine",
                 spec=ServerlessSpec(cloud="aws", region=self.env)
             )

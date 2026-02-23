@@ -4,21 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OGCHALLENGE | AI-Powered Critical Thinking</title>
+    <title>Intelligence for All | AI-Powered Critical Thinking</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Orbitron:wght@500;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-dark: #09090b;
-            --bg-card: #13131a;
-            --primary: #8b5cf6;
-            --secondary: #3b82f6;
-            --accent: #f43f5e;
-            --gold: #fbbf24;
-            --text-main: #ffffff;
-            --text-dim: #9ca3af;
+            /* Branding Colors */
+            --bg-dark: #000000;
+            /* Pure Black */
+            --bg-card: #111111;
+            /* Very Dark Gray */
+            --bg-card-hover: #1a1a1a;
+            --primary-gradient: linear-gradient(135deg, #a855f7, #c026d3, #06b6d4);
+            --button-gradient: linear-gradient(to right, #d946ef, #b0008e);
+            --button-glow: rgba(192, 38, 211, 0.5);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --border-color: #222222;
+            --accent-gold: #f59e0b;
         }
 
         * {
@@ -28,7 +33,7 @@
 
         body {
             margin: 0;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', system-ui, sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-main);
             overflow-x: hidden;
@@ -37,169 +42,204 @@
             min-height: 100vh;
         }
 
-        /* Ambient Glow */
+        /* Ambient Glow Behind Hero */
         body::before {
             content: '';
             position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at center, rgba(139, 92, 246, 0.1), rgba(9, 9, 11, 0) 70%);
+            top: -20%;
+            left: 20%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, rgba(217, 70, 239, 0.15) 0%, rgba(10, 10, 10, 0) 70%);
             z-index: -1;
             pointer-events: none;
         }
 
+        /* NAVIGATION (MagicBrain Style) */
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 40px;
-            background: rgba(9, 9, 11, 0.9);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 40px;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
             z-index: 1000;
         }
 
         .logo {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            background: linear-gradient(90deg, #fff, var(--primary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            /* Fix lint */
-            -webkit-text-fill-color: transparent;
+            color: white;
             display: flex;
             align-items: center;
             gap: 12px;
             cursor: pointer;
         }
 
+        .logo-icon {
+            background: var(--primary-gradient);
+            padding: 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .nav-links {
             display: flex;
-            gap: 20px;
+            gap: 10px;
         }
 
         .nav-item {
             cursor: pointer;
             color: var(--text-dim);
-            font-weight: 600;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .nav-item:hover,
+        .nav-item:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
         .nav-item.active {
             color: white;
+            background: rgba(217, 70, 239, 0.15);
+            /* Purple tint for active */
         }
 
-        .nav-item.premium {
-            color: var(--gold);
-        }
-
-        /* VIEW CONTAINER */
-        .view-section {
-            display: none;
-            /* Hidden by default */
-            padding: 40px;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-            flex: 1;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .view-section.active {
-            display: flex;
-            flex-direction: column;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* HERO / DASHBOARD */
+        /* HERO SECTION */
         .hero-header {
             text-align: center;
-            margin-bottom: 60px;
+            margin: 60px auto 40px;
+            max-width: 800px;
+        }
+
+        .hero-icon-large {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-gradient);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+            box-shadow: 0 0 30px rgba(217, 70, 239, 0.3);
         }
 
         .hero-header h1 {
-            font-size: 3.5rem;
-            margin-bottom: 10px;
-            font-family: 'Orbitron';
+            font-size: 4rem;
+            font-weight: 800;
+            margin: 0 0 15px 0;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .hero-header p {
             color: var(--text-dim);
-            font-size: 1.2rem;
+            font-size: 1.25rem;
+            line-height: 1.6;
+            margin: 0 auto;
+            max-width: 650px;
         }
 
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            width: 100%;
-        }
-
-        .category-card {
+        /* GENERATOR FORM (MagicBrain Aesthetic) */
+        .generator-card {
             background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
-            padding: 25px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
+            padding: 30px;
+            max-width: 600px;
+            margin: 0 auto;
+            color: var(--text-main);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .generator-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: white;
             display: flex;
-            flex-direction: column;
+            align-items: center;
             gap: 10px;
         }
 
-        .category-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        .generator-subtitle {
+            color: var(--text-dim);
+            margin-bottom: 25px;
+            font-size: 0.95rem;
         }
 
-        .category-card h3 {
-            margin: 0;
-            font-size: 1.2rem;
+        .form-group {
+            margin-bottom: 20px;
         }
 
-        .category-card p {
-            margin: 0;
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
             color: var(--text-dim);
             font-size: 0.9rem;
         }
 
-        .category-icon {
-            font-size: 2rem;
-            color: var(--primary);
-            margin-bottom: 10px;
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            color: white;
+            background: rgba(10, 10, 10, 0.5);
+            /* Very dark inside input */
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
         }
 
-        .premium-lock {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            color: var(--gold);
-            background: rgba(251, 191, 36, 0.1);
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
+        .form-control:focus {
+            outline: none;
+            border-color: #d946ef;
+            background: rgba(10, 10, 10, 0.8);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: var(--button-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 15px;
             display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 5px;
+            gap: 10px;
+            box-shadow: 0 4px 20px var(--button-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px var(--button-glow);
+            filter: brightness(1.1);
         }
 
         /* QUIZ INTERFACE */
@@ -256,7 +296,7 @@
         }
 
         .option-btn:hover {
-            background: rgba(139, 92, 246, 0.2);
+            background: rgba(217, 70, 239, 0.2);
             border-color: var(--primary);
         }
 
@@ -272,7 +312,7 @@
 
         .explanation-box {
             margin-top: 30px;
-            background: rgba(139, 92, 246, 0.1);
+            background: rgba(217, 70, 239, 0.1);
             border-left: 4px solid var(--primary);
             padding: 20px;
             border-radius: 8px;
@@ -347,6 +387,22 @@
             font-size: 1.5rem;
         }
 
+        /* VIEW CONTAINER */
+        .view-section {
+            display: none !important;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .view-section.active {
+            display: flex !important;
+            flex-direction: column;
+        }
+
         /* SIMULATION VIEW */
         .simulation-container {
             display: flex;
@@ -378,11 +434,11 @@
 
         @keyframes pulseGlow {
             from {
-                text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+                text-shadow: 0 0 10px rgba(217, 70, 239, 0.5);
             }
 
             to {
-                text-shadow: 0 0 20px rgba(139, 92, 246, 1);
+                text-shadow: 0 0 20px rgba(217, 70, 239, 1);
             }
         }
 
@@ -464,6 +520,82 @@
                 transform: rotate(360deg);
             }
         }
+
+        footer {
+            margin-top: auto;
+            padding: 20px 40px;
+            background: rgba(10, 10, 10, 0.85);
+            /* Glassmorphism background */
+            backdrop-filter: blur(12px);
+            /* Blur effect */
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .footer-brand {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .footer-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icons a {
+            color: var(--text-dim);
+            font-size: 1.2rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .social-icons a:hover {
+            color: white;
+            background: var(--button-glow);
+            transform: translateY(-2px);
+        }
+
+        .footer-copyright {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+        }
     </style>
 </head>
 
@@ -471,93 +603,103 @@
 
     <!-- NAV -->
     <nav>
-        <div class="logo" onclick="switchView('dashboard')">
-            <i class="fas fa-brain fa-lg" style="color: var(--primary);"></i>
-            OGCHALLENGE
+        <div class="logo" onclick="switchView('dashboard')"
+            style="font-weight: 800; font-size: 1.4rem; letter-spacing: 1px;">
+            <img src="/static/ifa_logo.jpg" alt="IFA Logo"
+                style="height: 55px; margin-right: 15px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);">
+            INTELLIGENCE FOR ALL
         </div>
         <div class="nav-links">
-            <div class="nav-item active" onclick="switchView('dashboard')">Home</div>
-            <div class="nav-item" onclick="switchView('simulation')">Cinematic Mode</div>
+            <div class="nav-item active" onclick="switchView('dashboard')"><i class="fas fa-home"></i> Home</div>
+            <div class="nav-item" onclick="switchView('simulation')"><i class="fas fa-play-circle"></i> Cinematic Mode
+            </div>
+            <div class="nav-item" onclick="openProfile()"><i class="fas fa-user"></i> Profile</div>
             <div class="nav-item" onclick="openSettings()"><i class="fas fa-cog"></i> Config</div>
-            <div class="nav-item premium" onclick="showPremiumModal()"><i class="fas fa-crown"></i> Premium</div>
         </div>
     </nav>
 
     <!-- DASHBOARD VIEW -->
     <section id="dashboard" class="view-section active">
         <div class="hero-header">
-            <h1>CHALLENGE YOUR MIND</h1>
-            <p>Select a category to generate a unique AI-powered challenge.</p>
+            <img src="/static/ifa_logo.jpg" alt="Intelligence for All Hero Logo"
+                style="height: 180px; border-radius: 50%; border: 6px solid var(--primary); margin-bottom: 25px; box-shadow: 0 0 40px rgba(59, 130, 246, 0.8);">
+            <h1 style="font-size: 3.5rem; font-weight: 800; letter-spacing: 1px;">Challenge Your <span
+                    class="brand-text">Mind</span> 🧠🔥</h1>
+            <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto;">Step into the ultimate trivia arena.
+                Outsmart our AI, battle players globally in real-time, and prove your genius to the world. Are you ready
+                to play?</p>
         </div>
 
-        <div class="category-grid">
-            <!-- Free Categories -->
-            <div class="category-card" onclick="generateChallenge('Future Tech')">
-                <i class="fas fa-robot category-icon"></i>
-                <h3>Future Tech</h3>
-                <p>Singularity, AI Ethics, Cybernetics</p>
-            </div>
-            <div class="category-card" onclick="generateChallenge('Simulation Theory')">
-                <i class="fas fa-vr-cardboard category-icon"></i>
-                <h3>Simulation Theory</h3>
-                <p>Glitches, Reality, Determinism</p>
-            </div>
-            <div class="category-card" onclick="generateChallenge('Spy Mission')">
-                <i class="fas fa-user-secret category-icon"></i>
-                <h3>Spy Mission</h3>
-                <p>Espionage, Cryptography, Stealth</p>
-            </div>
-            <div class="category-card" onclick="generateChallenge('Detective Mystery')">
-                <i class="fas fa-magnifying-glass category-icon"></i>
-                <h3>Detective Mystery</h3>
-                <p>Deduction, Evidence, Crime</p>
-            </div>
-            <div class="category-card" onclick="generateChallenge('Escape Room')">
-                <i class="fas fa-door-open category-icon"></i>
-                <h3>Escape Room</h3>
-                <p>Logic Puzzles, Riddles, Time</p>
-            </div>
-            <div class="category-card" onclick="generateChallenge('Survival')">
-                <i class="fas fa-campground category-icon"></i>
-                <h3>Survival</h3>
-                <p>Wilderness, Resource Management</p>
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto 60px auto; align-items: stretch;">
+            <!-- Start Challenge Card -->
+            <div class="generator-card" style="display: flex; flex-direction: column;">
+                <div class="generator-title"><i class="fas fa-bolt" style="color: #f59e0b;"></i> Start a Challenge</div>
+                <div class="generator-subtitle">Configure your parameters to begin your test</div>
+
+                <form id="generator-form" onsubmit="handleGeneratorSubmit(event)"
+                    style="display: flex; flex-direction: column; flex: 1;">
+                    <div class="form-group">
+                        <label class="form-label">Subject Category</label>
+                        <select id="gen-category" class="form-control">
+                            <option value="Future Tech">🤖 Future Tech (AI, Cybernetics)</option>
+                            <option value="Simulation Theory">🖥️ Simulation Theory</option>
+                            <option value="Spy Mission">🎯 Spy Mission (Cryptography)</option>
+                            <option value="Detective Mystery">🕵️‍♂️ Detective Mystery</option>
+                            <option value="Mind Bender">🌀 Mind Bender (Paradoxes)</option>
+                            <option value="Time Travel">⏰ Time Travel</option>
+                            <option value="Movies">🎬 Movies</option>
+                            <option value="Music">🎵 Music</option>
+                            <option value="Sports">🏆 Sports</option>
+                            <option value="Facts">🧠 Facts</option>
+                            <option value="Twisted Fantasy">😈 Twisted Fantasy</option>
+                            <option value="Adult Games">🔞 Adult Games (18+)</option>
+                            <option value="World History">🌍 World History</option>
+                            <option value="Science">🔬 Science</option>
+                            <option value="Chemistry">🧪 Chemistry</option>
+                            <option value="Biology">🧬 Biology</option>
+                            <option value="Politics">🏛️ Politics</option>
+                            <option value="Deep Physics">⚛️ Deep Physics</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Difficulty Level</label>
+                        <select id="gen-difficulty" class="form-control">
+                            <option value="Beginner">🌱 Beginner</option>
+                            <option value="Medium" selected>⚖️ Intermediate</option>
+                            <option value="Hard">🔥 Advanced</option>
+                            <option value="Expert">💎 Expert ($ Reward)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="margin-top: auto;">START PLAYING <i
+                            class="fas fa-arrow-right"></i></button>
+                </form>
             </div>
 
-            <!-- More Free Categories -->
-            <div class="category-card" onclick="generateChallenge('Mind Bender')">
-                <i class="fas fa-brain category-icon"></i>
-                <h3>Mind Bender</h3>
-                <p>Paradoxes, Logic Loops, Abstract</p>
-            </div>
-            <div class="category-card" onclick="generateChallenge('Conspiracy')">
-                <i class="fas fa-user-secret category-icon"></i>
-                <h3>Conspiracy</h3>
-                <p>Hidden Truths, Cover-ups, Aliens</p>
-            </div>
-            <div class="category-card" onclick="generateChallenge('Time Travel')">
-                <i class="fas fa-hourglass-half category-icon"></i>
-                <h3>Time Travel</h3>
-                <p>Butterly Effect, Loops, Paradox</p>
-            </div>
+            <!-- Multiplayer Card -->
+            <div class="generator-card" style="text-align: center; display: flex; flex-direction: column;">
+                <div class="generator-title" style="justify-content: center;"><i class="fas fa-users"
+                        style="color: #b0008e;"></i> Multiplayer</div>
+                <div class="generator-subtitle">Challenge your friends in real-time</div>
 
-            <!-- Premium Categories -->
-            <div class="category-card" onclick="checkPremium('Physics')">
-                <div class="premium-lock"><i class="fas fa-lock"></i> Premium</div>
-                <i class="fas fa-atom category-icon" style="color: var(--gold)"></i>
-                <h3>Deep Physics</h3>
-                <p>Quantum Mechanics, Astrophysics</p>
-            </div>
-            <div class="category-card" onclick="checkPremium('Adult')">
-                <div class="premium-lock"><i class="fas fa-lock"></i> 18+</div>
-                <i class="fas fa-heart category-icon" style="color: var(--accent)"></i>
-                <h3>Relationships</h3>
-                <p>Psychology, Dynamics, Modern Dating</p>
-            </div>
-            <div class="category-card" onclick="checkPremium('Wealth')">
-                <div class="premium-lock"><i class="fas fa-lock"></i> Premium</div>
-                <i class="fas fa-coins category-icon" style="color: var(--gold)"></i>
-                <h3>Wealth Mastery</h3>
-                <p>Finance, Strategy, Economics</p>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
+                    <button onclick="hostMatch()" class="btn-primary"
+                        style="flex: 1; background: rgba(59, 130, 246, 0.2); border: 1px solid var(--secondary); box-shadow: none;">Host
+                        Match</button>
+                </div>
+
+                <div class="form-group" style="text-align: left; margin-top: auto;">
+                    <label class="form-label">Join a Match</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="join-code" class="form-control" placeholder="4-Digit Code"
+                            style="flex: 1; text-transform: uppercase;" maxlength="4">
+                        <input type="text" id="player-name" class="form-control" placeholder="Your Name"
+                            style="flex: 2;">
+                    </div>
+                    <button onclick="joinMatch()" class="btn-primary" style="margin-top: 10px;">Join Match</button>
+                </div>
             </div>
         </div>
     </section>
@@ -583,11 +725,41 @@
                 <div class="explanation-box" id="quiz-explanation">
                     <h3 id="result-title">Insight</h3>
                     <p id="explanation-text"></p>
-                    <button class="cta-button" onclick="switchView('dashboard')"
-                        style="margin-top: 15px; background: transparent; border: 1px solid var(--primary); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Next
-                        Challenge</button>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button class="cta-button" onclick="switchView('dashboard')"
+                            style="background: transparent; border: 1px solid var(--primary); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; flex: 1;">Next
+                            Challenge</button>
+                        <button class="cta-button" onclick="shareChallenge()"
+                            style="background: var(--button-gradient); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; flex: 1;"><i
+                                class="fas fa-share-alt"></i> Share Quiz</button>
+                    </div>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- LOBBY VIEW -->
+    <section id="lobby-view" class="view-section">
+        <div class="generator-card" style="text-align: center;">
+            <i class="fas fa-satellite-dish fa-3x" style="color: var(--secondary); margin-bottom: 20px;"></i>
+            <h2 style="margin-bottom: 10px;">Waiting Room</h2>
+            <div style="font-size: 2rem; letter-spacing: 5px; font-weight: bold; color: var(--primary); margin-bottom: 20px;"
+                id="lobby-code-display">----</div>
+
+            <div style="background: rgba(0,0,0,0.5); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                <h3
+                    style="font-size: 1rem; color: var(--text-dim); margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                    Connected Players</h3>
+                <ul id="player-list" style="list-style: none; padding: 0; margin: 0; text-align: left;">
+                    <!-- Players injected here -->
+                </ul>
+            </div>
+
+            <div id="host-controls" style="display: none;">
+                <button onclick="startMultiplayerMatch()" class="btn-primary"
+                    style="background: var(--button-gradient);"><i class="fas fa-play"></i> Start Match</button>
+            </div>
+            <p id="waiting-msg" style="color: var(--text-dim); font-size: 0.9rem;">Waiting for Host to start...</p>
         </div>
     </section>
 
@@ -622,12 +794,12 @@
             <div class="close-modal" onclick="closeSettings()">&times;</div>
             <i class="fas fa-cog fa-2x" style="color: var(--text-dim); margin-bottom: 20px;"></i>
             <h2>SYSTEM CONFIG</h2>
-            <p>Enter your API Keys to unlock the full AI Core.</p>
+            <p>Enter your API Keys for external services.</p>
 
             <div style="text-align: left; margin-top: 20px;">
-                <label style="display: block; color: var(--text-dim); margin-bottom: 5px;">OpenAI API Key
-                    (Logic)</label>
-                <input type="password" id="openai-key" placeholder="sk-..." style="width: 100%; margin-bottom: 15px;">
+                <label style="display: block; color: var(--text-dim); margin-bottom: 5px;">Groq API Key (Logic Engine -
+                    Llama 3)</label>
+                <input type="password" id="groq-key" placeholder="gsk_..." style="width: 100%; margin-bottom: 15px;">
 
                 <label style="display: block; color: var(--text-dim); margin-bottom: 5px;">RunwayML API Secret
                     (Video)</label>
@@ -643,21 +815,88 @@
         </div>
     </div>
 
-    <!-- PREMIUM MODAL -->
-    <div class="modal-overlay" id="premium-modal">
-        <div class="modal">
-            <div class="close-modal" onclick="closeModal()">&times;</div>
-            <i class="fas fa-crown fa-3x" style="color: var(--gold); margin-bottom: 20px;"></i>
-            <h2>OG PREMIUM</h2>
-            <p>Unlock Advanced Challenges: Physics, Biology, Politics, Relationships (18+), and more.</p>
+    <!-- PROFILE MODAL -->
+    <div class="modal-overlay" id="profile-modal">
+        <div class="modal" style="max-width: 400px; text-align: center;">
+            <div class="close-modal" onclick="closeProfile()">&times;</div>
+            <i class="fas fa-user-circle fa-4x" style="color: var(--primary); margin-bottom: 20px;"></i>
 
-            <div class="price-tag">€1.99<span class="sub-price">/week</span></div>
+            <div id="profile-logged-out">
+                <h2>Ident Link</h2>
+                <p style="color: var(--text-dim); margin-bottom: 20px;">Enter a unique alias to establish your identity
+                    and start earning rewards.</p>
+                <input type="text" id="login-username" class="form-control" placeholder="Agent Alias"
+                    style="width: 100%; text-align: center; margin-bottom: 15px;">
+                <button class="pay-btn" onclick="loginUser()" style="background: var(--button-gradient);"><i
+                        class="fas fa-sign-in-alt"></i> Establish Link</button>
+            </div>
 
-            <button class="pay-btn" onclick="alert('Redirecting to Stripe/Apple Pay...')"><i class="fab fa-apple"></i>
-                <i class="fab fa-google-pay"></i> Pay Now</button>
-            <p style="margin-top: 15px; font-size: 0.8rem; color: var(--text-dim);">Cancel anytime. Secure payment.</p>
+            <div id="profile-logged-in" style="display: none;">
+                <h2 id="display-username" style="margin-bottom: 5px;">Username</h2>
+                <p style="color: var(--text-dim); margin-bottom: 20px; font-size: 0.9rem;">Identity Verified.</p>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <div
+                        style="flex: 1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color);">
+                        <i class="fas fa-gamepad"
+                            style="color: var(--secondary); font-size: 1.5rem; margin-bottom: 10px;"></i>
+                        <div style="font-size: 1.2rem; font-weight: bold;" id="display-games">0</div>
+                        <div style="font-size: 0.8rem; color: var(--text-dim);">Matches</div>
+                    </div>
+                    <div
+                        style="flex: 1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color);">
+                        <i class="fas fa-wallet"
+                            style="color: var(--gold); font-size: 1.5rem; margin-bottom: 10px;"></i>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: var(--gold);" id="display-balance">$0
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-dim);">Wallet</div>
+                    </div>
+                </div>
+
+                <div style="text-align: left; margin-bottom: 20px;">
+                    <label style="display: block; color: var(--text-dim); margin-bottom: 5px; font-size: 0.9rem;">Modify
+                        Alias</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="edit-username" class="form-control" style="flex: 1;">
+                        <button class="pay-btn" onclick="updateUser()" style="width: auto; padding: 10px 15px;"><i
+                                class="fas fa-save"></i></button>
+                    </div>
+                </div>
+
+                <button class="pay-btn" onclick="logoutUser()"
+                    style="background: transparent; border: 1px solid var(--border-color); color: white; margin-bottom: 10px;"><i
+                        class="fas fa-sign-out-alt"></i> Disconnect</button>
+                <button class="pay-btn" onclick="deleteUser()"
+                    style="background: transparent; border: 1px solid #ef4444; color: #ef4444;"><i
+                        class="fas fa-trash-alt"></i> Erase Identity</button>
+            </div>
         </div>
     </div>
+
+    <!-- MAIN FOOTER -->
+    <footer>
+        <div class="footer-links">
+            <a href="/about">About Us</a>
+            <a href="/rules">Game Rules & Scoring</a>
+            <a href="/support">Support / Contact</a>
+            <a href="/privacy">Privacy Policy</a>
+            <a href="/terms">Terms of Service</a>
+        </div>
+
+        <div class="social-icons">
+            <a href="https://twitter.com" target="_blank" title="X (Twitter)"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="https://discord.com" target="_blank" title="Discord Community"><i
+                    class="fa-brands fa-discord"></i></a>
+            <a href="https://github.com" target="_blank" title="GitHub Open Source"><i
+                    class="fa-brands fa-github"></i></a>
+            <a href="https://youtube.com" target="_blank" title="YouTube Tutorials"><i
+                    class="fa-brands fa-youtube"></i></a>
+        </div>
+
+        <div class="footer-copyright">
+            &copy; 2026 INTELLIGENCE FOR ALL. All rights reserved.
+        </div>
+    </footer>
 
     <script>
         const API_URL = "http://localhost:8000";
@@ -676,22 +915,48 @@
             }
         }
 
+        // On Load Logic (Deep Linking)
+        window.onload = async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const challengeId = urlParams.get('challenge');
+            if (challengeId) {
+                await loadSharedChallenge(challengeId);
+            }
+        };
+
+        async function loadSharedChallenge(challengeId) {
+            document.getElementById('dashboard').classList.remove('active');
+            switchView('quiz-view');
+            document.getElementById('quiz-view').classList.add('active');
+            document.getElementById('quiz-content').style.display = 'none';
+            document.getElementById('quiz-loader').style.display = 'block';
+
+            try {
+                const res = await fetch(`${API_URL}/challenges/${challengeId}`);
+                if (!res.ok) throw new Error("Challenge not found");
+                const data = await res.json();
+                renderQuiz(data, data.title || "Shared Challenge");
+                document.getElementById('difficulty-display').innerText = "Dynamic";
+            } catch (e) {
+                alert("Failed to load shared challenge.");
+                switchView('dashboard');
+            }
+        }
+
         // Settings Logic
         function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
         function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
 
         async function saveSettings() {
-            const openai = document.getElementById('openai-key').value;
+            const groq = document.getElementById('groq-key').value;
             const runway = document.getElementById('runway-key').value;
             const pinecone = document.getElementById('pinecone-key').value;
-
-            if (!openai && !runway && !pinecone) return;
 
             try {
                 await fetch(`${API_URL}/settings/update`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ openai_key: openai, runway_key: runway, pinecone_key: pinecone })
+                    body: JSON.stringify({ groq_key: groq, runway_key: runway, pinecone_key: pinecone })
                 });
                 alert("System Initialized. Reloading Core...");
                 location.reload();
@@ -700,33 +965,33 @@
             }
         }
 
-        // Premium Logic
-        function checkPremium(topic) {
-            if (topic === 'Adult') {
+        // Generator Logic
+        function handleGeneratorSubmit(e) {
+            e.preventDefault();
+            const category = document.getElementById('gen-category').value;
+            const diff = document.getElementById('gen-difficulty').value;
+
+            if (category === 'Adult Games') {
                 if (!confirm("Age Verification: Are you over 18?")) return;
             }
-            showPremiumModal();
+
+            currentDifficulty = diff; // Override with form selection
+            generateChallenge(category);
         }
 
-        function showPremiumModal() {
-            document.getElementById('premium-modal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('premium-modal').style.display = 'none';
-        }
-
-        // Generator Logic
         async function generateChallenge(topic) {
+            // Actively hide dashboard elements
+            document.getElementById('dashboard').classList.remove('active');
+
             switchView('quiz-view');
+            document.getElementById('quiz-view').classList.add('active'); // Ensure visibility via class
             document.getElementById('quiz-content').style.display = 'none';
             document.getElementById('quiz-loader').style.display = 'block';
 
-            // Adaptive Logic
-            if (userLevel > 2) currentDifficulty = "Hard";
-            else if (userLevel < 0) currentDifficulty = "Easy";
-            else currentDifficulty = "Medium";
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
+            // Now relies entirely on the generator form's currentDifficulty selection
             document.getElementById('difficulty-display').innerText = currentDifficulty;
 
             try {
@@ -776,6 +1041,35 @@
                 btnElement.classList.add('correct');
                 resultTitle.innerHTML = '<span style="color:#22c55e"><i class="fas fa-check"></i> Correct</span>';
                 userLevel++; // Increase difficulty
+
+                // Reward Logic
+                if (currentUser && currentDifficulty === 'Expert') {
+                    // $10 for Expert questions
+                    fetch(`${API_URL}/users/${currentUser.id}/reward`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ amount: 10 })
+                    }).then(res => res.json()).then(data => {
+                        currentUser = data;
+                        updateProfileUI();
+                        // Show visual pop up
+                        const rewardPopup = document.createElement('div');
+                        rewardPopup.innerHTML = '+$10 Reward!';
+                        rewardPopup.style.position = 'fixed';
+                        rewardPopup.style.bottom = '20px';
+                        rewardPopup.style.right = '20px';
+                        rewardPopup.style.background = 'var(--gold)';
+                        rewardPopup.style.color = 'black';
+                        rewardPopup.style.padding = '15px 30px';
+                        rewardPopup.style.borderRadius = '50px';
+                        rewardPopup.style.fontWeight = 'bold';
+                        rewardPopup.style.zIndex = '10000';
+                        rewardPopup.style.animation = 'glow 1.5s ease-in-out infinite alternate';
+                        document.body.appendChild(rewardPopup);
+                        setTimeout(() => rewardPopup.remove(), 3000);
+                    });
+                }
+
             } else {
                 btnElement.classList.add('wrong');
                 resultTitle.innerHTML = '<span style="color:#ef4444"><i class="fas fa-times"></i> Incorrect</span>';
@@ -787,6 +1081,26 @@
             document.getElementById('explanation-text').innerText = currentChallenge.explanation;
             expBox.style.display = 'block';
             expBox.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function shareChallenge() {
+            if (!currentChallenge || !currentChallenge.id) {
+                alert("Cannot share this challenge (no ID returned from server).");
+                return;
+            }
+            const shareUrl = `${window.location.origin}${window.location.pathname}?challenge=${currentChallenge.id}`;
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                const btn = document.querySelector('button[onclick="shareChallenge()"]');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Link Copied!';
+                btn.style.background = "#22c55e"; // Green
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = "var(--button-gradient)";
+                }, 2000);
+            }).catch(err => {
+                alert("Failed to copy link: " + shareUrl);
+            });
         }
         // --- SIMULATION LOGIC ---
         let simInventory = [];
@@ -841,17 +1155,331 @@
                 });
             }
 
-            // Mock Assets UI logic
+            // Real Asset Pipeline Integration
+            const videoStatusDiv = document.getElementById('sim-video-status');
             if (state.assets && state.assets.length > 0) {
-                document.getElementById('sim-video-status').innerHTML = '<i class="fas fa-video fa-3x" style="margin-bottom: 20px;"></i><p>Generating Video Asset...</p>';
+                const asset = state.assets[0];
+                videoStatusDiv.innerHTML = '<i class="fas fa-video fa-spin fa-3x" style="margin-bottom: 20px;"></i><p>Generating Cinematic Video...</p>';
 
-                // Fake a loading delay to show asset generated
-                setTimeout(() => {
-                    document.getElementById('sim-video-status').innerHTML = `<i class="fas fa-play-circle fa-3x" style="margin-bottom: 20px; color: var(--gold);"></i><p>Asset Ready: ${state.assets[0].prompt || 'Video'}</p>`;
-                }, 1500);
+                fetch(`${API_URL}/assets/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: asset.prompt, image_url: "placeholder" })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.task_id === "out_of_credits") {
+                            videoStatusDiv.innerHTML = `<div style="text-align: center; color: #f59e0b; padding: 20px;">
+                                <i class="fas fa-coins" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                                <h3 style="margin-bottom: 5px;">Out of Credits</h3>
+                                <p style="font-size: 0.9rem; color: var(--text-dim);">Your RunwayML account doesn't have enough credits to generate this video. Please upgrade your API plan or remove the key in Config settings to re-enable demo scenarios.</p>
+                            </div>`;
+                        } else if (data.task_id && data.task_id !== "error_task_id") {
+                            pollAssetStatus(data.task_id, videoStatusDiv);
+                        } else {
+                            videoStatusDiv.innerHTML = '<i class="fas fa-exclamation-triangle fa-3x" style="margin-bottom: 20px; color: #ef4444;"></i><p>Video Processing Failed</p>';
+                        }
+                    })
+                    .catch(err => {
+                        videoStatusDiv.innerHTML = '<i class="fas fa-exclamation-triangle fa-3x" style="margin-bottom: 20px; color: #ef4444;"></i><p>Error connecting to Pipeline</p>';
+                    });
+
             } else {
-                document.getElementById('sim-video-status').innerHTML = '<i class="fas fa-satellite-dish fa-3x" style="margin-bottom: 20px;"></i><p>Standby.</p>';
+                videoStatusDiv.innerHTML = '<i class="fas fa-satellite-dish fa-3x" style="margin-bottom: 20px;"></i><p>Standby.</p>';
             }
+        }
+
+        function pollAssetStatus(taskId, targetDiv) {
+            const pollInterval = setInterval(() => {
+                fetch(`${API_URL}/assets/status/${taskId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'SUCCEEDED') {
+                            clearInterval(pollInterval);
+                            const videoUrl = data.output && data.output.length > 0 ? data.output[0] : "https://assets.runwayml.com/example.webm"; // Fallback URL just in case
+                            targetDiv.innerHTML = `
+                                <video width="100%" height="auto" style="border-radius: 10px; border: 1px solid var(--border-color);" autoplay loop muted playsinline>
+                                    <source src="${videoUrl}" type="video/webm">
+                                    Your browser does not support the video tag.
+                                </video>
+                            `;
+                        } else if (data.status === 'FAILED' || data.error) {
+                            clearInterval(pollInterval);
+                            targetDiv.innerHTML = '<i class="fas fa-exclamation-triangle fa-3x" style="margin-bottom: 20px; color: #ef4444;"></i><p>Video Processing Failed</p>';
+                        }
+                    })
+                    .catch(e => console.error("Polling error", e));
+            }, 3000); // Poll every 3 seconds
+        }
+
+        // --- MULTIPLAYER LOGIC ---
+        let ws = null;
+        let currentRoom = null;
+        let isHost = false;
+        let myName = "";
+
+        async function hostMatch() {
+            try {
+                const res = await fetch(`${API_URL}/multiplayer/host`);
+                const data = await res.json();
+                currentRoom = data.room_code;
+                isHost = true;
+                myName = "Host_" + Math.floor(Math.random() * 1000);
+
+                setupWebSocket();
+
+                document.getElementById('lobby-code-display').innerText = currentRoom;
+                document.getElementById('host-controls').style.display = 'block';
+                document.getElementById('waiting-msg').style.display = 'none';
+                switchView('lobby-view');
+            } catch (e) {
+                alert("Could not connect to multiplayer server.");
+            }
+        }
+
+        function joinMatch() {
+            const code = document.getElementById('join-code').value.toUpperCase();
+            const name = document.getElementById('player-name').value;
+
+            if (code.length !== 4 || !name) {
+                alert("Please enter a 4-digit code and your name.");
+                return;
+            }
+
+            currentRoom = code;
+            isHost = false;
+            myName = name;
+
+            setupWebSocket();
+
+            document.getElementById('lobby-code-display').innerText = currentRoom;
+            document.getElementById('host-controls').style.display = 'none';
+            document.getElementById('waiting-msg').style.display = 'block';
+            switchView('lobby-view');
+        }
+
+        function setupWebSocket() {
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsHost = API_URL.replace('http://', '').replace('https://', '');
+            ws = new WebSocket(`${wsProtocol}//${wsHost}/ws/${currentRoom}`);
+
+            ws.onopen = () => {
+                ws.send(JSON.stringify({
+                    action: "join",
+                    name: myName
+                }));
+            };
+
+            ws.onmessage = async (event) => {
+                const msg = JSON.parse(event.data);
+
+                if (msg.type === "lobby_update") {
+                    const list = document.getElementById('player-list');
+                    list.innerHTML = '';
+                    msg.players.forEach(p => {
+                        const li = document.createElement('li');
+                        li.style.padding = '8px 0';
+                        li.innerHTML = `<i class="fas fa-user-astronaut" style="color: ${p === msg.host ? 'var(--gold)' : 'var(--primary)'}; width: 20px;"></i> ${p} ${p === msg.host ? '(Host)' : ''} ${p === myName ? '(You)' : ''}`;
+                        list.appendChild(li);
+                    });
+                } else if (msg.type === "game_started") {
+                    currentChallenge = msg.challenge;
+                    document.getElementById('lobby-view').classList.remove('active');
+                    document.getElementById('quiz-view').classList.add('active');
+                    document.getElementById('quiz-content').style.display = 'block';
+                    document.getElementById('quiz-loader').style.display = 'none';
+
+                    document.getElementById('quiz-topic').innerText = "Live Multiplayer Match";
+                    document.getElementById('quiz-question').innerText = currentChallenge.scenario;
+
+                    const optionsDiv = document.getElementById('quiz-options');
+                    optionsDiv.innerHTML = '';
+
+                    currentChallenge.options.forEach(opt => {
+                        const btn = document.createElement('div');
+                        btn.className = 'option-btn';
+                        btn.innerHTML = `<span style="font-weight:bold; color:var(--primary)">${opt.id}.</span> ${opt.text}`;
+                        btn.onclick = () => submitMultiplayerAnswer(opt.id, btn);
+                        optionsDiv.appendChild(btn);
+                    });
+
+                    document.getElementById('quiz-explanation').style.display = 'none';
+                }
+            };
+
+            ws.onclose = () => {
+                alert("Connection lost.");
+                switchView('dashboard');
+            };
+        }
+
+        async function startMultiplayerMatch() {
+            if (!isHost) return;
+
+            document.getElementById('lobby-view').classList.remove('active');
+            switchView('quiz-view');
+            document.getElementById('quiz-content').style.display = 'none';
+            document.getElementById('quiz-loader').style.display = 'block';
+
+            try {
+                // Host generates a random challenge to start
+                const res = await fetch(`${API_URL}/challenges/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topic: "General Knowledge", difficulty: "Medium", is_premium: false })
+                });
+                const challengeData = await res.json();
+
+                ws.send(JSON.stringify({
+                    action: "start",
+                    challenge: challengeData
+                }));
+            } catch (e) {
+                alert("Failed to generate multiplayer challenge.");
+                switchView('dashboard');
+            }
+        }
+
+        async function submitMultiplayerAnswer(selectedId, btnElement) {
+            document.querySelectorAll('.option-btn').forEach(b => b.style.pointerEvents = 'none');
+
+            const isCorrect = selectedId === currentChallenge.correct_option_id;
+
+            if (isCorrect) {
+                btnElement.classList.add('correct');
+                document.getElementById('result-title').innerHTML = '<span style="color:#22c55e"><i class="fas fa-check"></i> Correct</span>';
+                if (currentUser) {
+                    try {
+                        const res = await fetch(`${API_URL}/users/${currentUser.id}/reward`, { method: 'POST' });
+                        if (res.ok) {
+                            const updatedUser = await res.json();
+                            currentUser = updatedUser;
+                            updateProfileUI();
+                        }
+                    } catch (e) {
+                        console.error("Failed to reward user:", e);
+                    }
+                }
+            } else {
+                btnElement.classList.add('wrong');
+                document.getElementById('result-title').innerHTML = '<span style="color:#ef4444"><i class="fas fa-times"></i> Incorrect</span>';
+            }
+
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    action: "submit_answer",
+                    player: myName,
+                    answer_id: selectedId,
+                    is_correct: isCorrect
+                }));
+            }
+
+            const expBox = document.getElementById('quiz-explanation');
+            document.getElementById('explanation-text').innerText = currentChallenge.explanation;
+            expBox.style.display = 'block';
+            expBox.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- USER PROFILE & REWARDS LOGIC ---
+        let currentUser = null;
+
+        // On load, check localStorage for a saved session
+        const savedUserId = localStorage.getItem('omnimind_user_id');
+        if (savedUserId) {
+            fetch(`${API_URL}/users/${savedUserId}`)
+                .then(res => {
+                    if (res.ok) return res.json();
+                    throw new Error('Not found');
+                })
+                .then(data => {
+                    currentUser = data;
+                    updateProfileUI();
+                })
+                .catch(() => {
+                    localStorage.removeItem('omnimind_user_id');
+                });
+        }
+
+        function openProfile() {
+            document.getElementById('profile-modal').style.display = 'flex';
+            if (currentUser) {
+                document.getElementById('profile-logged-out').style.display = 'none';
+                document.getElementById('profile-logged-in').style.display = 'block';
+                document.getElementById('edit-username').value = currentUser.username;
+            } else {
+                document.getElementById('profile-logged-out').style.display = 'block';
+                document.getElementById('profile-logged-in').style.display = 'none';
+            }
+        }
+
+        function closeProfile() {
+            document.getElementById('profile-modal').style.display = 'none';
+        }
+
+        async function loginUser() {
+            const username = document.getElementById('login-username').value.trim();
+            if (!username) return alert("Please enter an alias.");
+
+            try {
+                const res = await fetch(`${API_URL}/users/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+                const data = await res.json();
+                currentUser = data;
+                localStorage.setItem('omnimind_user_id', currentUser.id);
+                updateProfileUI();
+                openProfile(); // Refresh view
+            } catch (e) {
+                alert("Login failed.");
+            }
+        }
+
+        async function updateUser() {
+            const newName = document.getElementById('edit-username').value.trim();
+            if (!newName || !currentUser) return;
+
+            try {
+                const res = await fetch(`${API_URL}/users/${currentUser.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: newName })
+                });
+                if (!res.ok) {
+                    const error = await res.json();
+                    throw new Error(error.detail || "Update failed.");
+                }
+                currentUser = await res.json();
+                updateProfileUI();
+                alert("Alias updated successfully.");
+            } catch (e) {
+                alert(e.message);
+            }
+        }
+
+        function logoutUser() {
+            currentUser = null;
+            localStorage.removeItem('omnimind_user_id');
+            openProfile(); // Refresh view
+        }
+
+        async function deleteUser() {
+            if (!currentUser || !confirm("WARNING: This will permanently erase your identity, games played, and wallet funds. Proceed?")) return;
+
+            try {
+                await fetch(`${API_URL}/users/${currentUser.id}`, { method: 'DELETE' });
+                logoutUser();
+            } catch (e) {
+                alert("Failed to delete account.");
+            }
+        }
+
+        function updateProfileUI() {
+            if (!currentUser) return;
+            document.getElementById('display-username').innerText = currentUser.username;
+            document.getElementById('display-games').innerText = currentUser.games_played;
+            document.getElementById('display-balance').innerText = `$${currentUser.balance}`;
         }
     </script>
 </body>
