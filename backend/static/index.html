@@ -1159,12 +1159,13 @@
             const videoStatusDiv = document.getElementById('sim-video-status');
             if (state.assets && state.assets.length > 0) {
                 const asset = state.assets[0];
-                videoStatusDiv.innerHTML = '<i class="fas fa-video fa-spin fa-3x" style="margin-bottom: 20px;"></i><p>Generating Cinematic Video...</p>';
+                const typeLabel = asset.type === 'image' ? 'Image' : 'Media';
+                videoStatusDiv.innerHTML = `<i class="fas fa-cogs fa-spin fa-3x" style="margin-bottom: 20px;"></i><p>Generating Cinematic ${typeLabel}...</p>`;
 
                 fetch(`${API_URL}/assets/generate`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: asset.prompt, image_url: "placeholder" })
+                    body: JSON.stringify({ prompt: asset.prompt, image_url: "placeholder", type: asset.type || "video" })
                 })
                     .then(res => res.json())
                     .then(data => {
@@ -1196,13 +1197,20 @@
                     .then(data => {
                         if (data.status === 'SUCCEEDED') {
                             clearInterval(pollInterval);
-                            const videoUrl = data.output && data.output.length > 0 ? data.output[0] : "https://assets.runwayml.com/example.webm"; // Fallback URL just in case
-                            targetDiv.innerHTML = `
-                                <video width="100%" height="auto" style="border-radius: 10px; border: 1px solid var(--border-color);" autoplay loop muted playsinline>
-                                    <source src="${videoUrl}" type="video/webm">
-                                    Your browser does not support the video tag.
-                                </video>
-                            `;
+                            const mediaUrl = data.output && data.output.length > 0 ? data.output[0] : "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"; // Fallback URL just in case
+
+                            if (data.type === 'image') {
+                                targetDiv.innerHTML = `
+                                    <img src="${mediaUrl}" width="100%" height="auto" style="border-radius: 10px; border: 1px solid var(--border-color);" alt="Generated Image" />
+                                `;
+                            } else {
+                                targetDiv.innerHTML = `
+                                    <video width="100%" height="auto" style="border-radius: 10px; border: 1px solid var(--border-color);" autoplay loop controls playsinline>
+                                        <source src="${mediaUrl}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                `;
+                            }
                         } else if (data.status === 'FAILED' || data.error) {
                             clearInterval(pollInterval);
                             targetDiv.innerHTML = '<i class="fas fa-exclamation-triangle fa-3x" style="margin-bottom: 20px; color: #ef4444;"></i><p>Video Processing Failed</p>';

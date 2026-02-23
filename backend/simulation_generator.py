@@ -40,7 +40,8 @@ class SimulationGenerator:
                 User Action: {action}
                 
                 Task: Generate the next narrative segment. 
-                If the user finds an item, describe it visually so we can generate a hologram.
+                Based on the user's action, determine what type of visual asset would be best. 
+                If the user explicitly asks to generate an image, short film, long film, or video, honor their request in the asset type.
                 
                 Output JSON format:
                 {{
@@ -48,7 +49,7 @@ class SimulationGenerator:
                     "options": ["Option 1", "Option 2"],
                     "difficulty_score": 1.5,
                     "assets": [
-                        {{ "type": "video", "prompt": "3D render of [item], rotating, cinematic lighting" }}
+                        {{ "type": "video|image|short_film|long_film", "prompt": "Detailed description of the visual scene" }}
                     ]
                 }}
             """)

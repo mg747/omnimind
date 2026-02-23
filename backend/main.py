@@ -74,6 +74,7 @@ class ChallengeRequest(BaseModel):
 class VideoGenerationRequest(BaseModel):
     prompt: str
     image_url: str
+    type: str = "video"
 class UserRequest(BaseModel):
     username: str
 
@@ -267,11 +268,11 @@ async def perform_action(request: ActionRequest, background_tasks: BackgroundTas
 @app.post("/assets/generate")
 async def generate_asset(request: VideoGenerationRequest):
     """
-    Trigger video generation. Returns a task ID.
+    Trigger media generation. Returns a task ID.
     User/Frontend should poll for status.
     """
     try:
-        task_id = asset_pipeline.generate_video_from_image(request.prompt, request.image_url)
+        task_id = asset_pipeline.generate_asset(request.prompt, request.image_url, request.type)
         if not task_id:
              raise HTTPException(status_code=500, detail="Failed to start video generation")
         return {"task_id": task_id, "status": "PENDING"}
