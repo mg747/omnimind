@@ -43,8 +43,8 @@ class AssetPipeline:
             print("Mocking generation (No API Key)")
             return "mock_task_id"
 
-        # Hash the prompt and image URL to create a unique key
-        cache_key = hashlib.sha256(f"{prompt}_{image_url}".encode()).hexdigest()
+        # Hash the prompt, image URL, and asset type to create a unique cache key
+        cache_key = hashlib.sha256(f"{prompt}_{image_url}_{asset_type_clean}".encode()).hexdigest()
         
         if cache_key in self.cache:
             print(f"Cache hit for prompt: {prompt}")
@@ -88,10 +88,10 @@ class AssetPipeline:
 
     def check_status(self, task_id: str) -> Dict:
         if task_id == "mock_image_task": return {"status": "SUCCEEDED", "type": "image", "output": ["https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=2564&auto=format&fit=crop"]}
-        if task_id == "mock_short_film_task": return {"status": "SUCCEEDED", "type": "video", "output": ["http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"]}
-        if task_id == "mock_long_film_task": return {"status": "SUCCEEDED", "type": "video", "output": ["http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"]}
+        if task_id == "mock_short_film_task": return {"status": "SUCCEEDED", "type": "video", "output": ["https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-1610-large.mp4"]}
+        if task_id == "mock_long_film_task": return {"status": "SUCCEEDED", "type": "video", "output": ["https://assets.mixkit.co/videos/preview/mixkit-milky-way-galaxy-in-the-night-sky-188-large.mp4"]}
         if task_id == "mock_task_id":
-             return {"status": "SUCCEEDED", "type": "video", "output": ["http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"]}
+             return {"status": "SUCCEEDED", "type": "video", "output": ["https://assets.mixkit.co/videos/preview/mixkit-abstract-technology-connection-loop-1491-large.mp4"]}
 
         try:
             response = requests.get(
