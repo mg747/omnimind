@@ -39,6 +39,11 @@ class SimulationGenerator:
                 
                 User Action: {action}
                 
+                THEMATIC INSTRUCTIONS:
+                - Tone/Style: Futuristic 3D animation, highly cinematic.
+                - Characters: Diverse humans (mixed race and ethnicity), future scientists.
+                - Themes: Stark contrast between rich and poor, reflecting on real-world societal advancements and consequences.
+                
                 Task: Generate the next narrative segment. 
                 CRITICAL INSTRUCTION: You MUST select the SINGLE best visual 'type' from THIS EXACT LIST: ["image", "video", "short_film", "long_film"].
                 - If the user's action includes "image" or "picture", you MUST set "type": "image".
