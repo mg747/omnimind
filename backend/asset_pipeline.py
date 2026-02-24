@@ -87,11 +87,23 @@ class AssetPipeline:
         return task_id
 
     def check_status(self, task_id: str) -> Dict:
-        if task_id == "mock_image_task": return {"status": "SUCCEEDED", "type": "image", "output": ["https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=2564&auto=format&fit=crop"]}
-        if task_id == "mock_short_film_task": return {"status": "SUCCEEDED", "type": "video", "output": ["http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"]}
-        if task_id == "mock_long_film_task": return {"status": "SUCCEEDED", "type": "video", "output": ["http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"]}
-        if task_id == "mock_task_id":
-             return {"status": "SUCCEEDED", "type": "video", "output": ["http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"]}
+        import random
+        image_mocks = [
+            "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=2564&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2564&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?q=80&w=2564&auto=format&fit=crop"
+        ]
+        video_mocks = [
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"
+        ]
+
+        if task_id == "mock_image_task": return {"status": "SUCCEEDED", "type": "image", "output": [random.choice(image_mocks)]}
+        if task_id in ["mock_short_film_task", "mock_long_film_task", "mock_task_id"]:
+             return {"status": "SUCCEEDED", "type": "video", "output": [random.choice(video_mocks)]}
 
         try:
             response = requests.get(

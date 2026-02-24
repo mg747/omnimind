@@ -1199,17 +1199,27 @@
                             clearInterval(pollInterval);
                             const mediaUrl = data.output && data.output.length > 0 ? data.output[0] : "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"; // Fallback URL just in case
 
+                            const containerDiv = document.getElementById('sim-video-container');
+                            targetDiv.style.display = 'none'; // Hide the spinner text
+
                             if (data.type === 'image') {
-                                targetDiv.innerHTML = `
-                                    <img src="${mediaUrl}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px; position: absolute; top: 0; left: 0; z-index: 10;" alt="Generated Image" />
-                                `;
+                                // Add image specifically to the container matching its bounds
+                                const existingMedia = containerDiv.querySelector('.rendered-media');
+                                if (existingMedia) existingMedia.remove(); // Clean up old media
+
+                                containerDiv.insertAdjacentHTML('beforeend', `
+                                    <img src="${mediaUrl}" class="rendered-media" style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px; position: absolute; top: 0; left: 0; z-index: 10;" alt="Generated Image" />
+                                `);
                             } else {
-                                targetDiv.innerHTML = `
-                                    <video style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px; position: absolute; top: 0; left: 0; z-index: 10;" autoplay loop controls playsinline crossorigin="anonymous">
+                                const existingMedia = containerDiv.querySelector('.rendered-media');
+                                if (existingMedia) existingMedia.remove(); // Clean up old media
+
+                                containerDiv.insertAdjacentHTML('beforeend', `
+                                    <video class="rendered-media" style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px; position: absolute; top: 0; left: 0; z-index: 10;" autoplay loop controls playsinline crossorigin="anonymous">
                                         <source src="${mediaUrl}" type="video/mp4">
                                         Your browser does not support the video tag.
                                     </video>
-                                `;
+                                `);
                             }
                         } else if (data.status === 'FAILED' || data.error) {
                             clearInterval(pollInterval);
