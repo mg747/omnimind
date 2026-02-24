@@ -34,9 +34,10 @@ class AssetPipeline:
         """
         Generates media from an image/text using Runway.
         """
-        if asset_type == "image": return "mock_image_task"
-        if asset_type == "short_film": return "mock_short_film_task"
-        if asset_type == "long_film": return "mock_long_film_task"
+        asset_type_clean = asset_type.lower().strip()
+        if asset_type_clean == "image": return "mock_image_task"
+        if asset_type_clean == "short_film": return "mock_short_film_task"
+        if asset_type_clean == "long_film": return "mock_long_film_task"
         
         if not self.api_key:
             print("Mocking generation (No API Key)")

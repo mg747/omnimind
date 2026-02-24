@@ -40,8 +40,11 @@ class SimulationGenerator:
                 User Action: {action}
                 
                 Task: Generate the next narrative segment. 
-                Based on the user's action, determine what type of visual asset would be best. 
-                If the user explicitly asks to generate an image, short film, long film, or video, honor their request in the asset type.
+                CRITICAL INSTRUCTION: You MUST select the SINGLE best visual 'type' from THIS EXACT LIST: ["image", "video", "short_film", "long_film"].
+                - If the user's action includes "image" or "picture", you MUST set "type": "image".
+                - If the user's action includes "short film", you MUST set "type": "short_film".
+                - If the user's action includes "long film", you MUST set "type": "long_film".
+                - Otherwise, autonomously pick "image" or "video" based on whether it is a static or action scene.
                 
                 Output JSON format:
                 {{
@@ -49,7 +52,10 @@ class SimulationGenerator:
                     "options": ["Option 1", "Option 2"],
                     "difficulty_score": 1.5,
                     "assets": [
-                        {{ "type": "video|image|short_film|long_film", "prompt": "Detailed description of the visual scene" }}
+                        {{
+                            "type": "image",
+                            "prompt": "Detailed description of the visual scene"
+                        }}
                     ]
                 }}
             """)
