@@ -1,0 +1,20 @@
+{
+    "simulation": {
+        "title": "TERMINAL OMNIMIND",
+        "init_engine": "Inicializando Motor Director...",
+        "start": "Iniciar Simulación",
+        "connection_error": "Error de conexión: {}",
+        "processing": "Procesando...",
+        "error": "Error: {}",
+        "hint": "Ingrese orden manual...",
+        "watch_movies": "Ver Películas",
+        "select_movie": "Selecciona una película:",
+        "watch_bbb": "Ver Big Buck Bunny",
+        "watch_sintel": "Ver Sintel",
+        "return": "Volver a la Simulación",
+        "streaming_bbb": "Transmitiendo: Big Buck Bunny",
+        "streaming_sintel": "Transmitiendo: Sintel",
+        "stop_movie": "Detener Película",
+        "signal_lost": "SEÑAL PERDIDA"
+    }
+}

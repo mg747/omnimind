@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../main.dart';
 import '../widgets/holographic_display.dart';
+import '../widgets/language_selector_dialog.dart';
 
 class SimulationScreen extends StatefulWidget {
   const SimulationScreen({super.key});
@@ -28,11 +30,22 @@ class _SimulationScreenState extends State<SimulationScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("OMNIMIND TERMINAL"),
+        title: Text("simulation.title".tr()),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.language, color: Colors.cyanAccent),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return LanguageSelectorDialog();
+                },
+              );
+            },
+          ),
           if (state.isLoading)
              const Padding(
                padding: EdgeInsets.all(16.0),
@@ -52,6 +65,8 @@ class _SimulationScreenState extends State<SimulationScreen> {
                  child: HolographicDisplay(
                    videoUrl: state.currentAssetUrl ?? "https://assets.runwayml.com/example_output.webm", 
                    assetId: state.currentAssetId,
+                   isStream: state.isStream,
+                   subtitleUrl: state.subtitleUrl,
                    width: 350,
                    height: 350,
                  ),
@@ -115,7 +130,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.grey[850],
-                      hintText: "Enter manual override command...",
+                      hintText: "simulation.hint".tr(),
                       hintStyle: TextStyle(color: Colors.grey[500]),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5),

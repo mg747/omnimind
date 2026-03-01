@@ -1,0 +1,20 @@
+{
+    "simulation": {
+        "title": "OMNIMIND TERMINAL",
+        "init_engine": "Director Engine wird initialisiert...",
+        "start": "Simulation starten",
+        "connection_error": "Verbindungsfehler: {}",
+        "processing": "Wird bearbeitet...",
+        "error": "Fehler: {}",
+        "hint": "Geben Sie einen manuellen Übersteuerungsbefehl ein...",
+        "watch_movies": "Filme ansehen",
+        "select_movie": "Wählen Sie einen Film-Stream aus:",
+        "watch_bbb": "Big Buck Bunny ansehen",
+        "watch_sintel": "Sintel ansehen",
+        "return": "Zurück zur Simulation",
+        "streaming_bbb": "Jetzt streamen: Big Buck Bunny",
+        "streaming_sintel": "Jetzt streamen: Sintel",
+        "stop_movie": "Film anhalten",
+        "signal_lost": "SIGNAL VERLOREN"
+    }
+}

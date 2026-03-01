@@ -105,17 +105,17 @@ class SimulationGenerator:
     def _fallback_logic(self, action: str) -> Dict:
         # Simple fallback if no LLM
         return {
-            "message": f"You performed: {action}. (LLM Offline)",
-            "options": ["Continue"],
+            "message": f"Simulated Action Result: {action}. You push forward into the unknown. The environment shifts around you.",
+            "options": ["Investigate closer", "Turn back"],
             "difficulty_score": 1.0,
             "assets": [{"type": "video", "prompt": action}]
         }
 
-    def get_current_state(self) -> Dict:
+    def get_current_state(self, initial_prompt: str = "Futuristic control room") -> Dict:
         # Initial state
         return {
-             "message": "System Online. Awaiting input.",
-             "options": ["Look around"],
+             "message": "System Online. Initiating visual sequence based on your parameters.",
+             "options": ["Proceed", "Scan the area"],
              "difficulty_score": 1,
-             "assets": [{"type": "video", "prompt": "Futuristic control room"}]
+             "assets": [{"type": "video", "prompt": initial_prompt}]
         }

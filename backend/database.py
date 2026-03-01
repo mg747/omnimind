@@ -14,10 +14,15 @@ class Database:
             self.pc = Pinecone(api_key=self.api_key)
             self._initialize_index()
             self.index = self.pc.Index(self.index_name)
-            self.embeddings = PineconeEmbeddings(model="multilingual-e5-large", pinecone_api_key=self.api_key)
         else:
             print("Warning: PINECONE_API_KEY not set. Running in stateless mode.")
             self.index = None
+            
+    def _get_embeddings(self):
+        # Lazy load to avoid "no running event loop" at startup time
+        if not hasattr(self, '_embeddings'):
+            self._embeddings = PineconeEmbeddings(model="multilingual-e5-large", pinecone_api_key=self.api_key)
+        return self._embeddings
 
     def _initialize_index(self):
         """
@@ -40,7 +45,7 @@ class Database:
         """
         if not self.index: return
 
-        vector = self.embeddings.embed_query(text)
+        vector = self._get_embeddings().embed_query(text)
         self.index.upsert(vectors=[(
             f"{session_id}_{int(time.time())}",
             vector,
@@ -53,7 +58,7 @@ class Database:
         """
         if not self.index: return ""
 
-        vector = self.embeddings.embed_query(query)
+        vector = self._get_embeddings().embed_query(query)
         results = self.index.query(
             vector=vector,
             top_k=k,

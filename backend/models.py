@@ -16,6 +16,7 @@ class ChallengeModel(Base):
     correct_option_id = Column(String, nullable=False)
     explanation = Column(Text, nullable=False)
     is_premium = Column(Boolean, default=False)
+    time_limit = Column(Integer, default=60)
     
     def to_dict(self):
         return {
@@ -24,7 +25,8 @@ class ChallengeModel(Base):
             "scenario": self.scenario,
             "options": json.loads(self.options_json),
             "correct_option_id": self.correct_option_id,
-            "explanation": self.explanation
+            "explanation": self.explanation,
+            "time_limit": self.time_limit
         }
 
 class UserModel(Base):
@@ -42,6 +44,72 @@ class UserModel(Base):
             "balance": self.balance,
             "games_played": self.games_played
         }
+
+class SavedChallengeModel(Base):
+    __tablename__ = 'saved_challenges'
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, nullable=False, index=True)
+    challenge_id = Column(String, nullable=False)
+    # Storing denormalized data so we don't strict-rely on the primary challenge table 
+    # if it gets pruned later
+    topic = Column(String, nullable=False)
+    scenario = Column(Text, nullable=False)
+    options_json = Column(Text, nullable=False)
+    correct_option_id = Column(String, nullable=False)
+    explanation = Column(Text, nullable=False)
+    time_limit = Column(Integer, default=60)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "challenge_id": self.challenge_id,
+            "topic": self.topic,
+            "scenario": self.scenario,
+            "options": json.loads(self.options_json),
+            "correct_option_id": self.correct_option_id,
+            "explanation": self.explanation,
+            "time_limit": self.time_limit
+        }
+
+class CustomQuizModel(Base):
+    __tablename__ = 'custom_quizzes'
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, nullable=False, index=True)
+    title = Column(String, nullable=False)
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "title": self.title
+        }
+
+class QuizQuestionModel(Base):
+    __tablename__ = 'quiz_questions'
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    quiz_id = Column(String, nullable=False, index=True)
+    topic = Column(String, nullable=True)
+    scenario = Column(Text, nullable=False)
+    options_json = Column(Text, nullable=False)
+    correct_option_id = Column(String, nullable=False)
+    explanation = Column(Text, nullable=False)
+    time_limit = Column(Integer, default=60)
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "quiz_id": self.quiz_id,
+            "topic": self.topic,
+            "scenario": self.scenario,
+            "options": json.loads(self.options_json),
+            "correct_option_id": self.correct_option_id,
+            "explanation": self.explanation,
+            "time_limit": self.time_limit
+        }
+
 
 # SQLite Database Setup
 SQLALCHEMY_DATABASE_URL = "sqlite:///./omnimind.db"

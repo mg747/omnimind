@@ -8,7 +8,7 @@ from asset_pipeline import AssetPipeline
 from simulation_generator import SimulationGenerator
 import os
 from dotenv import load_dotenv
-from models import init_db, get_db, ChallengeModel, UserModel
+from models import init_db, get_db, ChallengeModel, UserModel, SavedChallengeModel, CustomQuizModel, QuizQuestionModel
 import json
 from sqlalchemy.orm import Session
 from ws_manager import manager
@@ -66,10 +66,26 @@ class ActionRequest(BaseModel):
     action: str
     inventory: List[str] = []
 
+from typing import List, Optional, Union
+
 class ChallengeRequest(BaseModel):
-    topic: str
+    topic: Union[str, List[str]]
     difficulty: str
     is_premium: bool = False
+    count: int = 1
+
+class CustomQuestionRequest(BaseModel):
+    scenario: str
+    options: List[dict]
+    correct_option_id: str
+    explanation: str
+    topic: Optional[str] = None
+    time_limit: Optional[int] = 60
+
+class CustomQuizRequest(BaseModel):
+    user_id: str
+    title: str
+    questions: List[CustomQuestionRequest]
 
 class VideoGenerationRequest(BaseModel):
     prompt: str
@@ -81,8 +97,71 @@ class UserRequest(BaseModel):
 class RewardRequest(BaseModel):
     amount: int
 
-# Endpoints
 
+# --- MOVIES & ENTERTAINMENT ---
+MOCK_MOVIES = [
+    {
+        "id": "m1",
+        "title": "Big Buck Bunny",
+        "description": "A large and lovable rabbit deals with three bullying rodents.",
+        "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Big_buck_bunny_poster_big.jpg/640px-Big_buck_bunny_poster_big.jpg",
+        "stream_url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        "subtitle_url": "/movies/subtitles/m1",
+        "duration": "9:56"
+    },
+    {
+        "id": "m2",
+        "title": "Sintel",
+        "description": "A lonely young woman learns a hard lesson about destiny.",
+        "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Sintel_poster.jpg/640px-Sintel_poster.jpg",
+        "stream_url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+        "subtitle_url": "/movies/subtitles/m2",
+        "duration": "14:48"
+    },
+    {
+        "id": "m3",
+        "title": "Tears of Steel",
+        "description": "A group of warriors and scientists try to save the world from destructive robots.",
+        "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Tears_of_Steel_poster.jpg/640px-Tears_of_Steel_poster.jpg",
+        "stream_url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+        "subtitle_url": "/movies/subtitles/m3",
+        "duration": "12:14"
+    }
+]
+
+@app.get("/movies")
+async def get_movies():
+    return MOCK_MOVIES
+
+@app.get("/movies/search")
+async def search_movies(q: Optional[str] = None):
+    if not q:
+        return MOCK_MOVIES
+    q_lower = q.lower()
+    return [m for m in MOCK_MOVIES if q_lower in m["title"].lower() or q_lower in m["description"].lower()]
+
+@app.get("/movies/stream/{movie_id}")
+async def get_movie_stream(movie_id: str):
+    movie = next((m for m in MOCK_MOVIES if m["id"] == movie_id), None)
+    if not movie:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    return movie
+
+@app.get("/movies/subtitles/{movie_id}")
+async def get_movie_subtitles(movie_id: str):
+    vtt_content = """WEBVTT
+
+1
+00:00:01.000 --> 00:00:04.000
+<i>Welcome to OmniMind Cinematic Mode.</i>
+
+2
+00:00:05.000 --> 00:00:08.000
+Enjoy the highest quality simulation streams.
+"""
+    return HTMLResponse(content=vtt_content, media_type="text/vtt")
+
+# Endpoints
 @app.get("/")
 async def root():
     response = FileResponse("static/index.html")
@@ -105,25 +184,140 @@ async def check_status():
 @app.post("/challenges/generate")
 async def generate_challenge_endpoint(req: ChallengeRequest, db: Session = Depends(get_db)):
     try:
-        challenge = challenge_generator.generate_challenge(req.topic, req.difficulty, req.is_premium)
+        # Enforce max 99 questions to prevent abuse/timeout
+        count = min(max(1, req.count), 99)
+        generated_challenges = challenge_generator.generate_challenge(req.topic, req.difficulty, req.is_premium, count)
         
-        # Save to SQLite Database
-        new_challenge = ChallengeModel(
-            id=challenge.get("id", ""),
-            topic=req.topic,
-            difficulty=req.difficulty,
-            scenario=challenge.get("scenario", ""),
-            options_json=json.dumps(challenge.get("options", [])),
-            correct_option_id=challenge.get("correct_option_id", ""),
-            explanation=challenge.get("explanation", ""),
-            is_premium=req.is_premium
-        )
-        db.add(new_challenge)
+        saved_challenges = []
+        for challenge in generated_challenges:
+            new_challenge = ChallengeModel(
+                id=challenge.get("id", ""),
+                topic=req.topic if isinstance(req.topic, str) and req.topic != "All Categories" else challenge.get("topic", "General"),
+                difficulty=req.difficulty,
+                scenario=challenge.get("scenario", ""),
+                options_json=json.dumps(challenge.get("options", [])),
+                correct_option_id=challenge.get("correct_option_id", ""),
+                explanation=challenge.get("explanation", ""),
+                is_premium=req.is_premium,
+                time_limit=challenge.get("time_limit", 60)
+            )
+            db.add(new_challenge)
+            saved_challenges.append(new_challenge.to_dict())
+            
         db.commit()
-        
-        return new_challenge.to_dict()
+        return saved_challenges
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+class SaveChallengeRequest(BaseModel):
+    challenge_id: str
+    topic: str
+    scenario: str
+    options: List[dict]
+    correct_option_id: str
+    explanation: str
+    time_limit: Optional[int] = 60
+
+@app.post("/users/{user_id}/saved_challenges")
+async def save_challenge(user_id: str, req: SaveChallengeRequest, db: Session = Depends(get_db)):
+    # Verify user exists
+    user = db.query(UserModel).filter(UserModel.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    # Check if already saved
+    existing = db.query(SavedChallengeModel).filter(
+        SavedChallengeModel.user_id == user_id, 
+        SavedChallengeModel.challenge_id == req.challenge_id
+    ).first()
+    if existing:
+        return existing.to_dict()
+        
+    saved = SavedChallengeModel(
+        user_id=user_id,
+        challenge_id=req.challenge_id,
+        topic=req.topic,
+        scenario=req.scenario,
+        options_json=json.dumps(req.options),
+        correct_option_id=req.correct_option_id,
+        explanation=req.explanation,
+        time_limit=req.time_limit
+    )
+    db.add(saved)
+    db.commit()
+    return saved.to_dict()
+
+@app.get("/users/{user_id}/saved_challenges")
+async def get_saved_challenges(user_id: str, db: Session = Depends(get_db)):
+    user = db.query(UserModel).filter(UserModel.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    saved_list = db.query(SavedChallengeModel).filter(SavedChallengeModel.user_id == user_id).all()
+    return [s.to_dict() for s in saved_list]
+
+@app.delete("/users/{user_id}/saved_challenges/{saved_id}")
+async def delete_saved_challenge(user_id: str, saved_id: str, db: Session = Depends(get_db)):
+    saved = db.query(SavedChallengeModel).filter(
+        SavedChallengeModel.id == saved_id,
+        SavedChallengeModel.user_id == user_id
+    ).first()
+    
+    if not saved:
+        raise HTTPException(status_code=404, detail="Saved challenge not found")
+        
+    db.delete(saved)
+    db.commit()
+    return {"status": "success", "message": "Challenge removed"}
+
+@app.post("/custom_quizzes")
+async def create_custom_quiz(req: CustomQuizRequest, db: Session = Depends(get_db)):
+    user = db.query(UserModel).filter(UserModel.id == req.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    new_quiz = CustomQuizModel(user_id=req.user_id, title=req.title)
+    db.add(new_quiz)
+    db.commit()
+    
+    saved_questions = []
+    for q in req.questions:
+        new_q = QuizQuestionModel(
+            quiz_id=new_quiz.id,
+            topic=q.topic,
+            scenario=q.scenario,
+            options_json=json.dumps(q.options),
+            correct_option_id=q.correct_option_id,
+            explanation=q.explanation,
+            time_limit=q.time_limit
+        )
+        db.add(new_q)
+        saved_questions.append(new_q)
+        
+    db.commit()
+    return {"quiz": new_quiz.to_dict(), "questions": [q.to_dict() for q in saved_questions]}
+
+@app.get("/custom_quizzes/{quiz_id}")
+async def get_custom_quiz(quiz_id: str, db: Session = Depends(get_db)):
+    quiz = db.query(CustomQuizModel).filter(CustomQuizModel.id == quiz_id).first()
+    if not quiz:
+        raise HTTPException(status_code=404, detail="Quiz not found")
+        
+    questions = db.query(QuizQuestionModel).filter(QuizQuestionModel.quiz_id == quiz_id).all()
+    
+    return {
+        "quiz": quiz.to_dict(),
+        "questions": [q.to_dict() for q in questions]
+    }
+
+@app.get("/users/{user_id}/custom_quizzes")
+async def get_user_custom_quizzes(user_id: str, db: Session = Depends(get_db)):
+    user = db.query(UserModel).filter(UserModel.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    quizzes = db.query(CustomQuizModel).filter(CustomQuizModel.user_id == user_id).all()
+    return [q.to_dict() for q in quizzes]
 
 # --- USER PROFILES & ECONOMY ---
 
@@ -253,10 +447,10 @@ async def websocket_endpoint(websocket: WebSocket, room_code: str):
             }, room_code)
 
 @app.get("/simulation/start")
-async def start_simulation():
+async def start_simulation(initial_prompt: str = "Futuristic control room"):
     # Reset simulation state if needed
     simulation_generator.__init__() 
-    return simulation_generator.get_current_state()
+    return simulation_generator.get_current_state(initial_prompt)
 
 @app.post("/simulation/action")
 async def perform_action(request: ActionRequest, background_tasks: BackgroundTasks):

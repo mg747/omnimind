@@ -14,9 +14,13 @@ class ApiService {
   ApiService._internal();
 
   /// Starts or resumes a simulation session
-  Future<Map<String, dynamic>> startSimulation() async {
+  Future<Map<String, dynamic>> startSimulation({String? initialPrompt}) async {
     try {
-      final response = await _dio.get('/simulation/start');
+      String url = '/simulation/start';
+      if (initialPrompt != null && initialPrompt.isNotEmpty) {
+        url += '?initial_prompt=${Uri.encodeComponent(initialPrompt)}';
+      }
+      final response = await _dio.get(url);
       return response.data;
     } catch (e) {
       print('Error starting simulation: $e');

@@ -1,0 +1,20 @@
+{
+    "simulation": {
+        "title": "全知终端",
+        "init_engine": "正在初始化导演引擎...",
+        "start": "开始模拟",
+        "connection_error": "连接错误: {}",
+        "processing": "正在处理...",
+        "error": "错误: {}",
+        "hint": "输入手动覆盖命令...",
+        "watch_movies": "看电影",
+        "select_movie": "选择电影流:",
+        "watch_bbb": "观看大熊兔",
+        "watch_sintel": "观看辛特尔",
+        "return": "返回模拟",
+        "streaming_bbb": "正在直播：大熊兔",
+        "streaming_sintel": "正在直播：辛特尔",
+        "stop_movie": "停止连载",
+        "signal_lost": "信号丢失"
+    }
+}

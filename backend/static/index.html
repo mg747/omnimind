@@ -9,6 +9,7 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Orbitron:wght@500;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css">
     <style>
         :root {
             /* Branding Colors */
@@ -113,6 +114,28 @@
             color: white;
             background: rgba(217, 70, 239, 0.15);
             /* Purple tint for active */
+        }
+
+        /* LANGUAGE MODAL SPECIFIC (Grid) */
+        .lang-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dim);
+        }
+
+        .lang-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
 
         /* HERO SECTION */
@@ -610,11 +633,18 @@
             INTELLIGENCE FOR ALL
         </div>
         <div class="nav-links">
-            <div class="nav-item active" onclick="switchView('dashboard')"><i class="fas fa-home"></i> Home</div>
-            <div class="nav-item" onclick="switchView('simulation')"><i class="fas fa-play-circle"></i> Cinematic Mode
+            <div class="nav-item active" onclick="switchView('dashboard')" data-i18n="nav_home"><i
+                    class="fas fa-home"></i> Home</div>
+            <div class="nav-item" onclick="switchView('simulation')" data-i18n="nav_cinematic"><i
+                    class="fas fa-play-circle"></i> Cinematic Mode</div>
+            <div class="nav-item" onclick="openProfile()" data-i18n="nav_profile"><i class="fas fa-user"></i> Profile
             </div>
-            <div class="nav-item" onclick="openProfile()"><i class="fas fa-user"></i> Profile</div>
-            <div class="nav-item" onclick="openSettings()"><i class="fas fa-cog"></i> Config</div>
+            <div class="nav-item" onclick="switchView('quiz-builder')"><i class="fas fa-hammer"></i> Quiz Builder</div>
+            <div class="nav-item" onclick="openSettings()" data-i18n="nav_config"><i class="fas fa-cog"></i> Config
+            </div>
+            <div class="nav-item" onclick="openLanguageModal()"><i class="fas fa-globe"></i> Language</div>
+            <div id="google_translate_element"
+                style="position: absolute; opacity: 0; width: 1px; height: 1px; overflow: hidden;"></div>
         </div>
     </nav>
 
@@ -623,11 +653,12 @@
         <div class="hero-header">
             <img src="/static/ifa_logo.jpg" alt="Intelligence for All Hero Logo"
                 style="height: 180px; border-radius: 50%; border: 6px solid var(--primary); margin-bottom: 25px; box-shadow: 0 0 40px rgba(59, 130, 246, 0.8);">
-            <h1 style="font-size: 3.5rem; font-weight: 800; letter-spacing: 1px;">Challenge Your <span
-                    class="brand-text">Mind</span> 🧠🔥</h1>
-            <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto;">Step into the ultimate trivia arena.
-                Outsmart our AI, battle players globally in real-time, and prove your genius to the world. Are you ready
-                to play?</p>
+            <h1 style="font-size: 3.5rem; font-weight: 800; letter-spacing: 1px;" data-i18n="hero_title">Challenge Your
+                <span class="brand-text">Mind</span> 🧠🔥
+            </h1>
+            <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto;" data-i18n="hero_sub">Step into the ultimate
+                trivia arena. Outsmart our AI, battle players globally in real-time, and prove your genius to the world.
+                Are you ready to play?</p>
         </div>
 
         <div
@@ -643,6 +674,16 @@
                         <label class="form-label">Subject Category</label>
                         <select id="gen-category" class="form-control">
                             <option value="Future Tech">🤖 Future Tech (AI, Cybernetics)</option>
+                            <option value="Artificial General Intelligence">🧠 Artificial General Intelligence (AGI)
+                            </option>
+                            <option value="Neural Networks">🕸️ Neural Networks</option>
+                            <option value="Retrieval-Augmented Generation">📚 Retrieval-Augmented Generation (RAG)
+                            </option>
+                            <option value="AI Tools & Compliance">⚖️ AI Tools & Compliance</option>
+                            <option value="AI Backdoors & Security">🔓 AI Backdoors & Security</option>
+                            <option value="Super AI Architecture">🏗️ Super AI Architecture</option>
+                            <option value="Robotic Automation">🦾 Robotic Automation</option>
+                            <option value="Software Engineering Agents">💻 Software Engineering (Agents)</option>
                             <option value="Simulation Theory">🖥️ Simulation Theory</option>
                             <option value="Spy Mission">🎯 Spy Mission (Cryptography)</option>
                             <option value="Detective Mystery">🕵️‍♂️ Detective Mystery</option>
@@ -661,6 +702,11 @@
                             <option value="Politics">🏛️ Politics</option>
                             <option value="Deep Physics">⚛️ Deep Physics</option>
                         </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Number of Questions (1-99)</label>
+                        <input type="number" id="gen-num-questions" class="form-control" min="1" max="99" value="10">
                     </div>
 
                     <div class="form-group">
@@ -716,6 +762,11 @@
                             style="color: var(--primary)">Calibrating...</span></span>
                 </div>
 
+                <div id="quiz-timer-container"
+                    style="text-align: center; margin: 15px 0; font-size: 1.5rem; font-weight: bold; color: var(--gold);">
+                    <i class="fas fa-stopwatch"></i> <span id="quiz-timer-display">60</span>s
+                </div>
+
                 <div class="question-text" id="quiz-question"></div>
 
                 <div class="options-list" id="quiz-options">
@@ -725,14 +776,108 @@
                 <div class="explanation-box" id="quiz-explanation">
                     <h3 id="result-title">Insight</h3>
                     <p id="explanation-text"></p>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="cta-button" onclick="switchView('dashboard')"
-                            style="background: transparent; border: 1px solid var(--primary); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; flex: 1;">Next
-                            Challenge</button>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;" id="result-actions">
+                        <button class="cta-button" id="save-question-btn" onclick="saveCurrentQuestion()"
+                            style="background: transparent; border: 1px solid var(--gold); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; flex: 1;">
+                            <i class="fas fa-bookmark hov-gold"></i> Save Question
+                        </button>
                         <button class="cta-button" onclick="shareChallenge()"
-                            style="background: var(--button-gradient); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; flex: 1;"><i
+                            style="background: transparent; border: 1px solid var(--primary); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; flex: 1;"><i
                                 class="fas fa-share-alt"></i> Share Quiz</button>
                     </div>
+                    <div style="margin-top: 15px; text-align: right;">
+                        <button class="cta-button" id="next-question-btn"
+                            style="display:none; background: var(--button-gradient); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; flex: 1; width: 100%; font-weight: bold;"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUIZ BUILDER VIEW -->
+    <section id="quiz-builder" class="view-section">
+        <div class="quiz-container">
+            <div class="quiz-header">
+                <h2><i class="fas fa-hammer" style="color: var(--primary);"></i> Custom Quiz Builder</h2>
+                <p style="color: var(--text-dim);">Design your own quiz by selecting categories, generating questions,
+                    and customizing them before sharing with friends.</p>
+            </div>
+
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 30px;">
+                <div style="flex: 1; min-width: 250px;">
+                    <label class="form-label">Topics (Hold Ctrl/Cmd to select multiple)</label>
+                    <select id="builder-topics" class="form-control" multiple style="height: 120px; font-size: 0.9rem;">
+                        <option value="Future Tech">🤖 Future Tech (AI, Cybernetics)</option>
+                        <option value="Artificial General Intelligence">🧠 Artificial General Intelligence (AGI)
+                        </option>
+                        <option value="Neural Networks">🕸️ Neural Networks</option>
+                        <option value="Retrieval-Augmented Generation">📚 Retrieval-Augmented Generation (RAG)</option>
+                        <option value="AI Tools & Compliance">⚖️ AI Tools & Compliance</option>
+                        <option value="AI Backdoors & Security">🔓 AI Backdoors & Security</option>
+                        <option value="Super AI Architecture">🏗️ Super AI Architecture</option>
+                        <option value="Robotic Automation">🦾 Robotic Automation</option>
+                        <option value="Software Engineering Agents">💻 Software Engineering (Agents)</option>
+                        <option value="Simulation Theory">🖥️ Simulation Theory</option>
+                        <option value="Spy Mission">🎯 Spy Mission (Cryptography)</option>
+                        <option value="Detective Mystery">🕵️‍♂️ Detective Mystery</option>
+                        <option value="Mind Bender">🌀 Mind Bender (Paradoxes)</option>
+                        <option value="Time Travel">⏰ Time Travel</option>
+                        <option value="Movies">🎬 Movies</option>
+                        <option value="Music">🎵 Music</option>
+                        <option value="Sports">🏆 Sports</option>
+                        <option value="Facts">🧠 Facts</option>
+                        <option value="World History">🌍 World History</option>
+                        <option value="Science">🔬 Science</option>
+                    </select>
+                </div>
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 250px;">
+                    <div>
+                        <label class="form-label">Questions to Generate</label>
+                        <input type="number" id="builder-count" class="form-control" value="5" min="1" max="20">
+                    </div>
+                    <div>
+                        <label class="form-label">Difficulty</label>
+                        <select id="builder-difficulty" class="form-control">
+                            <option value="Beginner">🌱 Beginner</option>
+                            <option value="Medium" selected>⚖️ Intermediate</option>
+                            <option value="Hard">🔥 Advanced</option>
+                            <option value="Expert">💎 Expert ($ Reward)</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary" onclick="generateBuilderQuestions()" style="margin-top:auto;"><i
+                            class="fas fa-magic"></i> Generate Questions</button>
+                </div>
+            </div>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin-bottom: 20px;">
+
+            <div id="builder-loader" class="loader" style="display: none;"></div>
+
+            <div id="builder-question-list" style="display: flex; flex-direction: column; gap: 15px;">
+                <!-- Builder questions injected here -->
+                <p style="text-align: center; color: var(--text-dim);">No questions added yet. Generate some above or
+                    add a custom one.</p>
+            </div>
+
+            <button class="cta-button" onclick="addNewBuilderQuestion()"
+                style="background: transparent; border: 1px dashed var(--text-dim); color: var(--text-dim); padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 15px;"><i
+                    class="fas fa-plus"></i> Add Blank Question</button>
+
+            <div
+                style="margin-top: 40px; background: rgba(0,0,0,0.5); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
+                <label class="form-label">Quiz Title</label>
+                <input type="text" id="builder-quiz-title" class="form-control" placeholder="e.g. My Ultimate Tech Quiz"
+                    style="margin-bottom: 15px;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-primary" onclick="saveCustomQuiz()" id="save-quiz-btn"
+                        style="background: var(--gold); color: white; flex: 1; min-width: 150px;"><i
+                            class="fas fa-save"></i> Save Quiz</button>
+                    <button class="btn-primary" onclick="shareCustomQuiz()" id="share-quiz-btn"
+                        style="background: #3b82f6; color: white; display: none; flex: 1; min-width: 150px;"><i
+                            class="fas fa-share-alt"></i> Share Link</button>
+                    <button class="btn-primary" onclick="enterCustomQuiz()" id="enter-quiz-btn"
+                        style="background: #22c55e; color: white; display: none; flex: 1; min-width: 150px;"><i
+                            class="fas fa-play"></i> Play Quiz</button>
                 </div>
             </div>
         </div>
@@ -762,6 +907,159 @@
             <p id="waiting-msg" style="color: var(--text-dim); font-size: 0.9rem;">Waiting for Host to start...</p>
         </div>
     </section>
+
+    <!-- LANGUAGE MODAL -->
+    <div id="language-modal" class="modal-overlay" onclick="if(event.target===this) closeLanguageModal()">
+        <div class="modal"
+            style="max-width: 900px; padding: 40px; background: #111; border: 1px solid #333; border-radius: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h2
+                    style="color: white; margin: 0; font-family: 'Inter', sans-serif; font-size: 1.5rem; text-align: left;">
+                    <i class="fas fa-globe"></i> Select Language
+                </h2>
+                <i class="fas fa-times close-modal" onclick="closeLanguageModal()" style="position: static;"></i>
+            </div>
+            <div class="language-grid"
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px;">
+                <div class="lang-item" onclick="selectLanguage('ar')">
+                    <span class="fi fi-ae" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">العربية</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('bg')">
+                    <span class="fi fi-bg" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">БЪЛГАРСКИ</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('cs')">
+                    <span class="fi fi-cz" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">ČEŠTINA</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('da')">
+                    <span class="fi fi-dk" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">DANSK</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('de')">
+                    <span class="fi fi-de" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">DEUTSCH</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('el')">
+                    <span class="fi fi-gr" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">ΕΛΛΗΝΙΚΑ</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('en')">
+                    <span class="fi fi-gb" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">ENGLISH</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('es')">
+                    <span class="fi fi-es" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">ESPAÑOL</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('et')">
+                    <span class="fi fi-ee" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">EESTI</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('fi')">
+                    <span class="fi fi-fi" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">SUOMI</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('fr')">
+                    <span class="fi fi-fr" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">FRANÇAIS</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('iw')">
+                    <span class="fi fi-il" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">עברית</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('hi')">
+                    <span class="fi fi-in" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">हिंदी</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('hu')">
+                    <span class="fi fi-hu" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">MAGYAR</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('id')">
+                    <span class="fi fi-id" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">INDONESIA</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('it')">
+                    <span class="fi fi-it" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">ITALIANO</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('ja')">
+                    <span class="fi fi-jp" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">日本語</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('ko')">
+                    <span class="fi fi-kr" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">한국어</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('lt')">
+                    <span class="fi fi-lt" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">LIETUVIŲ</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('lv')">
+                    <span class="fi fi-lv" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">LATVIEŠU</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('no')">
+                    <span class="fi fi-no" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">BOKMÅL</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('nl')">
+                    <span class="fi fi-nl" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">NEDERLANDS</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('pl')">
+                    <span class="fi fi-pl" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">POLSKI</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('pt')">
+                    <span class="fi fi-br" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">PORTUGUÊS</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('ro')">
+                    <span class="fi fi-ro" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">ROMÂNĂ</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('ru')">
+                    <span class="fi fi-ru" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">РУССКИЙ</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('sk')">
+                    <span class="fi fi-sk" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">SLOVENČINA</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('sl')">
+                    <span class="fi fi-si" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">SLOVENŠČINA</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('sv')">
+                    <span class="fi fi-se" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">SVENSKA</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('th')">
+                    <span class="fi fi-th" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">ไทย</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('tr')">
+                    <span class="fi fi-tr" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">TÜRKÇE</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('uk')">
+                    <span class="fi fi-ua" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">УКРАЇНСЬКА</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('vi')">
+                    <span class="fi fi-vn" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">TIẾNG VIỆT</span>
+                </div>
+                <div class="lang-item" onclick="selectLanguage('zh-CN')">
+                    <span class="fi fi-cn" style="font-size: 1.5rem; margin-bottom: 8px;"></span>
+                    <span style="font-size: 0.8rem; text-transform: uppercase;">中文</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- CINEMATIC SIMULATION VIEW -->
     <section id="simulation" class="view-section">
@@ -853,6 +1151,16 @@
                     </div>
                 </div>
 
+                <div style="text-align: left; margin-bottom: 25px;">
+                    <h3
+                        style="font-size: 1.1rem; color: var(--gold); margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                        <i class="fas fa-bookmark"></i> Saved Quizzes
+                    </h3>
+                    <div id="saved-quizzes-list" style="max-height: 200px; overflow-y: auto; padding-right: 5px;">
+                        <p style="color: var(--text-dim); font-size: 0.9rem;">No saved quizzes yet.</p>
+                    </div>
+                </div>
+
                 <div style="text-align: left; margin-bottom: 20px;">
                     <label style="display: block; color: var(--text-dim); margin-bottom: 5px; font-size: 0.9rem;">Modify
                         Alias</label>
@@ -899,6 +1207,30 @@
     </footer>
 
     <script>
+        function changeLanguage() {
+            var lang = document.getElementById("lang-switcher").value;
+            if (lang === 'en') {
+                document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=localhost; path=/;";
+                document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=127.0.0.1; path=/;";
+            } else {
+                document.cookie = `googtrans=/en/${lang}; path=/`;
+                document.cookie = `googtrans=/en/${lang}; domain=localhost; path=/`;
+                document.cookie = `googtrans=/en/${lang}; domain=127.0.0.1; path=/`;
+            }
+            location.reload();
+        }
+
+        // Initialize language dropdown state from cookie
+        document.addEventListener('DOMContentLoaded', () => {
+            const match = document.cookie.match(/googtrans=\/en\/([a-zA-Z-]+)/);
+            const lang = match ? match[1] : 'en';
+            const switcher = document.getElementById('lang-switcher');
+            if (switcher.querySelector(`option[value="${lang}"]`)) {
+                switcher.value = lang;
+            }
+        });
+
         const API_URL = "http://localhost:8000";
         let currentChallenge = null;
         let userLevel = 1; // Simple adaptive difficulty score
@@ -919,8 +1251,12 @@
         window.onload = async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const challengeId = urlParams.get('challenge');
+            const customQuizId = urlParams.get('custom_quiz');
+
             if (challengeId) {
                 await loadSharedChallenge(challengeId);
+            } else if (customQuizId) {
+                await loadCustomQuiz(customQuizId);
             }
         };
 
@@ -939,6 +1275,35 @@
                 document.getElementById('difficulty-display').innerText = "Dynamic";
             } catch (e) {
                 alert("Failed to load shared challenge.");
+                switchView('dashboard');
+            }
+        }
+
+        async function loadCustomQuiz(quizId) {
+            document.getElementById('dashboard').classList.remove('active');
+            switchView('quiz-view');
+            document.getElementById('quiz-view').classList.add('active');
+            document.getElementById('quiz-content').style.display = 'none';
+            document.getElementById('quiz-loader').style.display = 'block';
+
+            try {
+                const res = await fetch(`${API_URL}/custom_quizzes/${quizId}`);
+                if (!res.ok) throw new Error("Quiz not found");
+                const data = await res.json();
+
+                quizQueue = data.questions;
+                currentQuizIndex = 0;
+
+                if (quizQueue.length > 0) {
+                    renderQuiz(quizQueue[currentQuizIndex], data.quiz.title);
+                } else {
+                    alert("This custom quiz has no questions.");
+                    switchView('dashboard');
+                }
+
+                document.getElementById('difficulty-display').innerText = "Custom";
+            } catch (e) {
+                alert("Failed to load custom quiz.");
                 switchView('dashboard');
             }
         }
@@ -984,6 +1349,8 @@
             document.getElementById('dashboard').classList.remove('active');
 
             switchView('quiz-view');
+            const count = parseInt(document.getElementById('gen-num-questions').value) || 1;
+
             document.getElementById('quiz-view').classList.add('active'); // Ensure visibility via class
             document.getElementById('quiz-content').style.display = 'none';
             document.getElementById('quiz-loader').style.display = 'block';
@@ -998,15 +1365,29 @@
                 const res = await fetch(`${API_URL}/challenges/generate`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ topic: topic, difficulty: currentDifficulty, is_premium: false })
+                    body: JSON.stringify({ topic: topic, difficulty: currentDifficulty, is_premium: false, count: count })
                 });
                 const data = await res.json();
-                renderQuiz(data, topic);
+
+                // data is now an array
+                quizQueue = data;
+                currentQuizIndex = 0;
+
+                if (quizQueue.length > 0) {
+                    renderQuiz(quizQueue[currentQuizIndex], topic);
+                } else {
+                    alert("No challenges were generated.");
+                    switchView('dashboard');
+                }
             } catch (e) {
                 alert("Error generating challenge. Ensure backend is running.");
                 switchView('dashboard');
             }
         }
+
+        let quizQueue = [];
+        let currentQuizIndex = 0;
+        let timerInterval = null;
 
         function renderQuiz(data, topic) {
             currentChallenge = data;
@@ -1014,7 +1395,30 @@
             document.getElementById('quiz-content').style.display = 'block';
             document.getElementById('quiz-explanation').style.display = 'none';
 
-            document.getElementById('quiz-topic').innerText = topic;
+            // Timer Logic
+            if (timerInterval) clearInterval(timerInterval);
+            let timeLeft = data.time_limit || 60; // default to 60s if not provided
+            const timerDisplay = document.getElementById('quiz-timer-display');
+            const timerContainer = document.getElementById('quiz-timer-container');
+
+            timerDisplay.innerText = timeLeft;
+            timerContainer.style.color = 'var(--gold)'; // Reset to normal color
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerDisplay.innerText = timeLeft;
+                if (timeLeft <= 5) {
+                    timerContainer.style.color = '#ef4444'; // Red warning
+                }
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeout();
+                }
+            }, 1000);
+
+            // Update Progress
+            const progressText = quizQueue.length > 1 ? ` (Question ${currentQuizIndex + 1}/${quizQueue.length})` : '';
+            document.getElementById('quiz-topic').innerText = (data.topic || topic) + progressText;
             document.getElementById('quiz-question').innerText = data.scenario || data.scenario; // fallback
 
             const optionsDiv = document.getElementById('quiz-options');
@@ -1027,9 +1431,14 @@
                 btn.onclick = () => submitAnswer(opt.id, btn);
                 optionsDiv.appendChild(btn);
             });
+
+            // Hide Next Question Button Initially
+            const nextBtn = document.getElementById('next-question-btn');
+            if (nextBtn) nextBtn.style.display = 'none';
         }
 
         function submitAnswer(selectedId, btnElement) {
+            if (timerInterval) clearInterval(timerInterval);
             // Disable all buttons
             document.querySelectorAll('.option-btn').forEach(b => b.style.pointerEvents = 'none');
 
@@ -1076,11 +1485,105 @@
                 userLevel = Math.max(0, userLevel - 1); // Decrease difficulty
             }
 
+            document.getElementById('explanation-text').innerText = currentChallenge.explanation;
+            document.getElementById('quiz-explanation').style.display = 'block';
+
+            const nextBtn = document.getElementById('next-question-btn');
+            if (currentQuizIndex < quizQueue.length - 1) {
+                nextBtn.innerText = 'Next Question';
+                nextBtn.onclick = () => {
+                    currentQuizIndex++;
+                    renderQuiz(quizQueue[currentQuizIndex], document.getElementById('quiz-topic').innerText.split('(')[0].trim());
+                };
+                nextBtn.style.display = 'block';
+            } else {
+                nextBtn.innerText = 'Finish & Return';
+                nextBtn.onclick = () => {
+                    switchView('dashboard');
+                };
+                nextBtn.style.display = 'block';
+            }
+        }
+
+        function handleTimeout() {
+            // Disable all buttons
+            document.querySelectorAll('.option-btn').forEach(b => b.style.pointerEvents = 'none');
+
+            // Find correct element to color green
+            document.querySelectorAll('.option-btn').forEach(b => {
+                // simple hack: parse the first character since we structured it like "A. text"
+                if (b.innerHTML.includes(`<span style="font-weight:bold; color:var(--primary)">${currentChallenge.correct_option_id}.</span>`)) {
+                    b.classList.add('correct');
+                }
+            });
+
+            const resultTitle = document.getElementById('result-title');
+            resultTitle.innerHTML = '<span style="color:#ef4444"><i class="fas fa-clock"></i> Time\'s Up!</span>';
+            userLevel = Math.max(0, userLevel - 1); // Decrease difficulty
+
+
             // Show Explanation
             const expBox = document.getElementById('quiz-explanation');
             document.getElementById('explanation-text').innerText = currentChallenge.explanation;
             expBox.style.display = 'block';
-            expBox.scrollIntoView({ behavior: 'smooth' });
+
+            // Manage Next Button
+            const nextBtn = document.getElementById('next-question-btn');
+            if (nextBtn) {
+                if (currentQuizIndex < quizQueue.length - 1) {
+                    nextBtn.style.display = 'inline-block';
+                    nextBtn.innerText = "Next Question";
+                    nextBtn.onclick = () => {
+                        currentQuizIndex++;
+                        renderQuiz(quizQueue[currentQuizIndex], currentChallenge.topic);
+                    };
+                } else {
+                    nextBtn.style.display = 'inline-block';
+                    nextBtn.innerHTML = "<i class='fas fa-flag-checkered'></i> Finish Quiz";
+                    nextBtn.onclick = () => switchView('dashboard');
+                }
+            }
+
+            expBox.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+        async function saveCurrentQuestion() {
+            if (!currentUser) {
+                alert("Please log in to save questions.");
+                return;
+            }
+            if (!currentChallenge) return;
+
+            const btn = document.getElementById('save-question-btn');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            try {
+                const res = await fetch(`${API_URL}/users/${currentUser.id}/saved_challenges`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        challenge_id: currentChallenge.id,
+                        topic: currentChallenge.topic || document.getElementById('quiz-topic').innerText.split('(')[0].trim(),
+                        scenario: currentChallenge.scenario,
+                        options: currentChallenge.options,
+                        correct_option_id: currentChallenge.correct_option_id,
+                        explanation: currentChallenge.explanation
+                    })
+                });
+
+                if (res.ok) {
+                    btn.innerHTML = '<i class="fas fa-bookmark" style="color: var(--gold);"></i> Saved!';
+                    setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
+                } else {
+                    btn.innerHTML = originalHTML;
+                    alert("Failed to save.");
+                }
+            } catch (e) {
+                console.error(e);
+                btn.innerHTML = originalHTML;
+                alert("Connection error.");
+            }
         }
 
         function shareChallenge() {
@@ -1102,6 +1605,256 @@
                 alert("Failed to copy link: " + shareUrl);
             });
         }
+
+        // --- QUIZ BUILDER LOGIC ---
+        let builderQuestions = [];
+
+        async function generateBuilderQuestions() {
+            const selectElement = document.getElementById('builder-topics');
+            const selectedTopics = Array.from(selectElement.selectedOptions).map(option => option.value);
+            const count = parseInt(document.getElementById('builder-count').value) || 5;
+            const difficulty = document.getElementById('builder-difficulty').value;
+
+            if (selectedTopics.length === 0) {
+                alert("Please select at least one topic.");
+                return;
+            }
+
+            document.getElementById('builder-loader').style.display = 'block';
+            document.getElementById('builder-question-list').innerHTML = '';
+
+            try {
+                // Determine topic payload: if multiple, backend expects a list
+                const topicPayload = selectedTopics.length === 1 ? selectedTopics[0] : selectedTopics;
+
+                const res = await fetch(`${API_URL}/challenges/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        topic: topicPayload,
+                        difficulty: difficulty,
+                        count: count,
+                        is_premium: false
+                    })
+                });
+
+                if (!res.ok) throw new Error("Failed to generate questions");
+
+                const questions = await res.json();
+
+                // Add new questions to existing ones
+                builderQuestions = [...builderQuestions, ...questions];
+                renderBuilderQuestions();
+
+            } catch (err) {
+                console.error(err);
+                alert("Error generating questions.");
+            } finally {
+                document.getElementById('builder-loader').style.display = 'none';
+            }
+        }
+
+        function renderBuilderQuestions() {
+            const listDiv = document.getElementById('builder-question-list');
+            listDiv.innerHTML = '';
+
+            if (builderQuestions.length === 0) {
+                listDiv.innerHTML = '<p style="text-align: center; color: var(--text-dim);">No questions added yet. Generate some above or add a custom one.</p>';
+                return;
+            }
+
+            builderQuestions.forEach((q, index) => {
+                const qBox = document.createElement('div');
+                qBox.style.cssText = 'background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 10px; position:relative;';
+
+                // If it's a completely blank template question being edited immediately
+                if (q.isEditing) {
+                    qBox.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px;">
+                            <h4 style="margin:0; color:var(--primary);">Question ${index + 1}</h4>
+                            <button onclick="deleteBuilderQuestion(${index})" style="background:transparent; color:#ef4444; border:none; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <input type="text" id="edit-topic-${index}" value="${q.topic || 'General'}" class="form-control" style="margin-bottom:10px;" placeholder="Topic">
+                        <textarea id="edit-scenario-${index}" class="form-control" style="margin-bottom:10px;" placeholder="Scenario / Question">${q.scenario}</textarea>
+                        
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                            <div><label style="font-size:0.8rem; color:var(--text-dim);">Option A</label><input type="text" id="edit-optA-${index}" value="${q.options[0]?.text || ''}" class="form-control"></div>
+                            <div><label style="font-size:0.8rem; color:var(--text-dim);">Option B</label><input type="text" id="edit-optB-${index}" value="${q.options[1]?.text || ''}" class="form-control"></div>
+                            <div><label style="font-size:0.8rem; color:var(--text-dim);">Option C</label><input type="text" id="edit-optC-${index}" value="${q.options[2]?.text || ''}" class="form-control"></div>
+                            <div><label style="font-size:0.8rem; color:var(--text-dim);">Option D</label><input type="text" id="edit-optD-${index}" value="${q.options[3]?.text || ''}" class="form-control"></div>
+                        </div>
+                        
+                        <div style="margin-bottom:10px;">
+                            <label style="font-size:0.8rem; color:var(--text-dim);">Correct Option (A, B, C, or D)</label>
+                            <select id="edit-correct-${index}" class="form-control">
+                                <option value="A" ${q.correct_option_id === 'A' ? 'selected' : ''}>A</option>
+                                <option value="B" ${q.correct_option_id === 'B' ? 'selected' : ''}>B</option>
+                                <option value="C" ${q.correct_option_id === 'C' ? 'selected' : ''}>C</option>
+                                <option value="D" ${q.correct_option_id === 'D' ? 'selected' : ''}>D</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom:10px;">
+                            <label style="font-size:0.8rem; color:var(--text-dim);">Time Limit (Seconds)</label>
+                            <input type="number" id="edit-time-${index}" value="${q.time_limit || 60}" class="form-control" min="5" max="300">
+                        </div>
+                        
+                        <textarea id="edit-explanation-${index}" class="form-control" style="margin-bottom:10px;" placeholder="Explanation">${q.explanation || ''}</textarea>
+                        <button class="btn-primary" onclick="saveBuilderQuestionEdit(${index})" style="width:100%; padding: 10px;">Save Changes</button>
+                    `;
+                } else {
+                    let optionsHtml = '';
+                    if (q.options) {
+                        q.options.forEach(opt => {
+                            let color = opt.id === q.correct_option_id ? '#22c55e' : 'var(--text-dim)';
+                            optionsHtml += `<div style="font-size: 0.9rem; color: ${color};"><strong style="color:var(--primary);">${opt.id}.</strong> ${opt.text}</div>`;
+                        });
+                    }
+
+                    qBox.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+                            <h4 style="margin:0; color:var(--gold); font-size: 0.9rem;">Topic: ${q.topic || 'General'} <span style="color:var(--text-dim); font-size: 0.8rem; margin-left: 10px;"><i class="fas fa-stopwatch"></i> ${q.time_limit || 60}s</span></h4>
+                            <div>
+                                <button onclick="editBuilderQuestion(${index})" style="background:transparent; color:var(--primary); border:none; cursor:pointer; margin-right:10px;"><i class="fas fa-edit"></i> Edit</button>
+                                <button onclick="deleteBuilderQuestion(${index})" style="background:transparent; color:#ef4444; border:none; cursor:pointer;"><i class="fas fa-trash"></i> Delete</button>
+                            </div>
+                        </div>
+                        <p style="margin-bottom: 15px;">${q.scenario}</p>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px;">
+                            ${optionsHtml}
+                        </div>
+                    `;
+                }
+                listDiv.appendChild(qBox);
+            });
+        }
+
+        function addNewBuilderQuestion() {
+            builderQuestions.push({
+                scenario: "New Question Text",
+                topic: "Custom",
+                options: [
+                    { id: "A", text: "Answer 1" },
+                    { id: "B", text: "Answer 2" },
+                    { id: "C", text: "Answer 3" },
+                    { id: "D", text: "Answer 4" },
+                ],
+                correct_option_id: "A",
+                explanation: "Explanation...",
+                time_limit: 60,
+                isEditing: true
+            });
+            renderBuilderQuestions();
+        }
+
+        function editBuilderQuestion(index) {
+            builderQuestions[index].isEditing = true;
+            renderBuilderQuestions();
+        }
+
+        function saveBuilderQuestionEdit(index) {
+            builderQuestions[index].topic = document.getElementById(`edit-topic-${index}`).value;
+            builderQuestions[index].scenario = document.getElementById(`edit-scenario-${index}`).value;
+            builderQuestions[index].correct_option_id = document.getElementById(`edit-correct-${index}`).value;
+            let tl = parseInt(document.getElementById(`edit-time-${index}`).value);
+            builderQuestions[index].time_limit = isNaN(tl) ? 60 : tl;
+            builderQuestions[index].explanation = document.getElementById(`edit-explanation-${index}`).value;
+
+            // Re-map options
+            builderQuestions[index].options = [
+                { id: "A", text: document.getElementById(`edit-optA-${index}`).value },
+                { id: "B", text: document.getElementById(`edit-optB-${index}`).value },
+                { id: "C", text: document.getElementById(`edit-optC-${index}`).value },
+                { id: "D", text: document.getElementById(`edit-optD-${index}`).value }
+            ];
+
+            builderQuestions[index].isEditing = false;
+            renderBuilderQuestions();
+        }
+
+        function deleteBuilderQuestion(index) {
+            builderQuestions.splice(index, 1);
+            renderBuilderQuestions();
+        }
+
+        let savedCustomQuizId = null;
+
+        async function saveCustomQuiz() {
+            if (!currentUser) {
+                alert("You must be logged in to save a quiz.");
+                return;
+            }
+            if (builderQuestions.length === 0) {
+                alert("Please add at least one question to the quiz.");
+                return;
+            }
+
+            const title = document.getElementById('builder-quiz-title').value.trim() || `My Custom Quiz (${new Date().toLocaleDateString()})`;
+
+            // Clean up isEditing flag before sending to backend
+            const cleanQuestions = builderQuestions.map(q => {
+                const { isEditing, ...rest } = q;
+                return rest;
+            });
+
+            try {
+                const btn = document.getElementById('save-quiz-btn');
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+                const res = await fetch(`${API_URL}/custom_quizzes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: currentUser.id,
+                        title: title,
+                        questions: cleanQuestions
+                    })
+                });
+
+                if (!res.ok) throw new Error("Failed to save custom quiz");
+
+                const data = await res.json();
+                savedCustomQuizId = data.quiz.id;
+
+                btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+                setTimeout(() => { btn.innerHTML = originalHtml; }, 2000);
+
+                // Show share and play buttons
+                document.getElementById('share-quiz-btn').style.display = 'block';
+                document.getElementById('enter-quiz-btn').style.display = 'block';
+
+            } catch (err) {
+                console.error(err);
+                alert("Error saving custom quiz.");
+                document.getElementById('save-quiz-btn').innerHTML = '<i class="fas fa-save"></i> Save Quiz';
+            }
+        }
+
+        function shareCustomQuiz() {
+            if (!savedCustomQuizId) return;
+            const shareUrl = `${window.location.origin}${window.location.pathname}?custom_quiz=${savedCustomQuizId}`;
+
+            const btn = document.getElementById('share-quiz-btn');
+            const originalHtml = btn.innerHTML;
+
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Link Copied!';
+                setTimeout(() => { btn.innerHTML = originalHtml; }, 2000);
+            }).catch(err => {
+                alert("Share URL: " + shareUrl);
+            });
+        }
+
+        function enterCustomQuiz() {
+            if (!savedCustomQuizId) return;
+            // Uses the same routing parameter via history state, or just call the loadCustomQuiz function directly
+            window.history.pushState({}, '', `?custom_quiz=${savedCustomQuizId}`);
+            loadCustomQuiz(savedCustomQuizId);
+        }
+
+        // --- END QUIZ BUILDER LOGIC ---
+
         // --- SIMULATION LOGIC ---
         let simInventory = [];
 
@@ -1498,8 +2251,89 @@
             document.getElementById('display-username').innerText = currentUser.username;
             document.getElementById('display-games').innerText = currentUser.games_played;
             document.getElementById('display-balance').innerText = `$${currentUser.balance}`;
+            fetchSavedChallenges();
+        }
+
+        async function fetchSavedChallenges() {
+            if (!currentUser) return;
+            const container = document.getElementById('saved-quizzes-list');
+            try {
+                const res = await fetch(`${API_URL}/users/${currentUser.id}/saved_challenges`);
+                const data = await res.json();
+
+                if (data.length === 0) {
+                    container.innerHTML = '<p style="color: var(--text-dim); font-size: 0.9rem;">No saved quizzes yet.</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                data.forEach(item => {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'background: rgba(255,255,255,0.05); border-radius: 8px; padding: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--gold); text-align: left;';
+
+                    row.innerHTML = `
+                        <div style="flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding-right: 10px;">
+                            <strong style="color: white; font-size: 0.95rem; cursor: pointer;" onclick="loadSharedChallenge('${item.challenge_id}'); closeProfile();">${item.topic}</strong>
+                            <div style="font-size: 0.8rem; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis;">${item.scenario}</div>
+                        </div>
+                        <button onclick="deleteSavedChallenge('${item.id}')" style="background: transparent; border: none; color: #ef4444; cursor: pointer; padding: 5px;">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    `;
+                    container.appendChild(row);
+                });
+            } catch (e) {
+                console.error("Failed to fetch saved challenges", e);
+            }
+        }
+
+        async function deleteSavedChallenge(savedId) {
+            if (!currentUser) return;
+            try {
+                const res = await fetch(`${API_URL}/users/${currentUser.id}/saved_challenges/${savedId}`, { method: 'DELETE' });
+                if (res.ok) {
+                    fetchSavedChallenges(); // Refresh list
+                }
+            } catch (e) {
+                console.error("Failed to delete challenge", e);
+            }
         }
     </script>
+    <script type="text/javascript">
+        function openLanguageModal() {
+            document.getElementById('language-modal').style.display = 'flex';
+        }
+
+        function closeLanguageModal() {
+            document.getElementById('language-modal').style.display = 'none';
+        }
+
+        function selectLanguage(langCode) {
+            closeLanguageModal();
+            try {
+                // Set the Google Translate internal cookie to force the language
+                // The format is /auto/TARGET_LANG
+                document.cookie = `googtrans=/en/${langCode}; path=/; domain=${window.location.hostname}`;
+                document.cookie = `googtrans=/en/${langCode}; path=/;`; // For localhost/IPs
+
+                // We reload the page to apply the translation immediately
+                window.location.reload();
+            } catch (e) {
+                console.error("Translation change failed", e);
+            }
+        }
+
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'ar,bg,cs,da,de,el,en,es,et,fi,fr,iw,hi,hu,id,it,ja,ko,lt,lv,no,nl,pl,pt,ro,ru,sk,sl,sv,th,tr,uk,vi,zh-CN',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript"
+        src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 
 </html>

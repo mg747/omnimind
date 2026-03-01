@@ -10,12 +10,14 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_blue_plus: ^1.30.0
-  video_player: ^2.8.1
-  cached_video_player: ^2.0.4  # Or custom caching implementation using dio + path_provider
+  video_player: ^2.6.0
   dio: ^5.4.0
   path_provider: ^2.1.1
   provider: ^6.1.1
   http: ^1.2.0
+  easy_localization: ^3.0.3
+  share_plus: ^7.2.2
+  flag: ^7.0.0
 
 dev_dependencies:
   flutter_test:
@@ -26,3 +28,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/translations/
