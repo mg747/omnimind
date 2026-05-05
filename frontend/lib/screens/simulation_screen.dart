@@ -53,114 +53,14 @@ class _SimulationScreenState extends State<SimulationScreen> {
              )
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Holographic Display Area
-            Expanded(
-              flex: 2,
-               child: Center(
-                 child: HolographicDisplay(
-                   videoUrl: state.currentAssetUrl ?? "https://assets.runwayml.com/example_output.webm", 
-                   assetId: state.currentAssetId,
-                   isStream: state.isStream,
-                   subtitleUrl: state.subtitleUrl,
-                   width: 350,
-                   height: 350,
-                 ),
-               ),
-            ),
-            const SizedBox(height: 20),
-            
-            // Console / Text Area
-            Expanded(
-              flex: 1,
-              child: Container(
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: Colors.grey[900],
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.cyanAccent.withOpacity(0.3)),
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        state.currentMessage,
-                        style: const TextStyle(
-                          fontFamily: 'Courier',
-                          color: Colors.cyanAccent,
-                          fontSize: 16,
-                          height: 1.4,
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                      // Options Chips
-                      Wrap(
-                        spacing: 8,
-                        children: state.options.map((option) {
-                          return ActionChip(
-                            label: Text(option),
-                            backgroundColor: Colors.cyanAccent.withOpacity(0.1),
-                            side: const BorderSide(color: Colors.cyanAccent),
-                            labelStyle: const TextStyle(color: Colors.white, fontFamily: 'Courier'),
-                            onPressed: state.isLoading ? null : () {
-                              context.read<SimulationState>().submitAction(option);
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            
-            const SizedBox(height: 10),
-            
-            // Interaction Area
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _textController,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.grey[850],
-                      hintText: "simulation.hint".tr(),
-                      hintStyle: TextStyle(color: Colors.grey[500]),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    style: const TextStyle(color: Colors.white, fontFamily: 'Courier'),
-                    onSubmitted: (value) {
-                       if (value.isNotEmpty) {
-                         context.read<SimulationState>().submitAction(value);
-                         _textController.clear();
-                       }
-                    },
-                    enabled: !state.isLoading,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                IconButton(
-                  icon: const Icon(Icons.send, color: Colors.cyanAccent),
-                  onPressed: state.isLoading ? null : () {
-                     if (_textController.text.isNotEmpty) {
-                        context.read<SimulationState>().submitAction(_textController.text);
-                        _textController.clear();
-                     }
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth >= 600) {
+            return _buildWideLayout(state);
+          } else {
+            return _buildNarrowLayout(state);
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.redAccent.withOpacity(0.8),
@@ -168,6 +68,153 @@ class _SimulationScreenState extends State<SimulationScreen> {
            context.read<SimulationState>().unlockDevice();
         },
         child: const Icon(Icons.lock_open),
+      ),
+    );
+  }
+
+  Widget _buildHolographicDisplay(SimulationState state) {
+    return Center(
+      child: AspectRatio(
+        aspectRatio: 1.0,
+        child: HolographicDisplay(
+          videoUrl: state.currentAssetUrl ?? "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", 
+          assetId: state.currentAssetId,
+          isStream: state.isStream,
+          subtitleUrl: state.subtitleUrl,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildConsoleArea(SimulationState state) {
+    return Container(
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.cyanAccent.withOpacity(0.3)),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              state.currentMessage,
+              style: const TextStyle(
+                fontFamily: 'Courier',
+                color: Colors.cyanAccent,
+                fontSize: 16,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 15),
+            Wrap(
+              spacing: 8,
+              children: state.options.map((option) {
+                return ActionChip(
+                  label: Text(option),
+                  backgroundColor: Colors.cyanAccent.withOpacity(0.1),
+                  side: const BorderSide(color: Colors.cyanAccent),
+                  labelStyle: const TextStyle(color: Colors.white, fontFamily: 'Courier'),
+                  onPressed: state.isLoading ? null : () {
+                    context.read<SimulationState>().submitAction(option);
+                  },
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInteractionArea(SimulationState state) {
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: _textController,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.grey[850],
+              hintText: "simulation.hint".tr(),
+              hintStyle: TextStyle(color: Colors.grey[500]),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5),
+                borderSide: BorderSide.none,
+              ),
+            ),
+            style: const TextStyle(color: Colors.white, fontFamily: 'Courier'),
+            onSubmitted: (value) {
+               if (value.isNotEmpty) {
+                 context.read<SimulationState>().submitAction(value);
+                 _textController.clear();
+               }
+            },
+            enabled: !state.isLoading,
+          ),
+        ),
+        const SizedBox(width: 10),
+        IconButton(
+          icon: const Icon(Icons.send, color: Colors.cyanAccent),
+          onPressed: state.isLoading ? null : () {
+             if (_textController.text.isNotEmpty) {
+                context.read<SimulationState>().submitAction(_textController.text);
+                _textController.clear();
+             }
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNarrowLayout(SimulationState state) {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            flex: 2,
+            child: _buildHolographicDisplay(state),
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            flex: 1,
+            child: _buildConsoleArea(state),
+          ),
+          const SizedBox(height: 10),
+          _buildInteractionArea(state),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWideLayout(SimulationState state) {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            flex: 1,
+            child: _buildHolographicDisplay(state),
+          ),
+          const SizedBox(width: 20),
+          Expanded(
+            flex: 1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: _buildConsoleArea(state),
+                ),
+                const SizedBox(height: 10),
+                _buildInteractionArea(state),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

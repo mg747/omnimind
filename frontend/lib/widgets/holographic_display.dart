@@ -9,8 +9,8 @@ import 'package:share_plus/share_plus.dart';
 class HolographicDisplay extends StatefulWidget {
   final String videoUrl;
   final String assetId; // Unique ID for caching (e.g., hash of prompt)
-  final double width;
-  final double height;
+  final double? width;
+  final double? height;
   final bool isStream;
   final String? subtitleUrl;
   final bool showSubtitles;
@@ -19,8 +19,8 @@ class HolographicDisplay extends StatefulWidget {
     super.key,
     required this.videoUrl,
     required this.assetId,
-    this.width = 300,
-    this.height = 300,
+    this.width,
+    this.height,
     this.isStream = false,
     this.subtitleUrl,
     this.showSubtitles = true,

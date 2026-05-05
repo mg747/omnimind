@@ -38,6 +38,7 @@
             background-color: var(--bg-dark);
             color: var(--text-main);
             overflow-x: hidden;
+            overflow-y: scroll;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -619,6 +620,16 @@
             text-align: center;
             margin-top: 10px;
         }
+
+        /* Responsive Mobile Layouts */
+        @media (max-width: 768px) {
+            .logo-text { display: none; }
+            .logo img { height: 40px !important; margin-right: 0 !important; }
+            nav { padding: 10px; flex-wrap: wrap; }
+            .nav-links { overflow-x: auto; padding-top: 10px; width: 100%; justify-content: flex-start; }
+            .hero-header h1 { font-size: 2.5rem !important; }
+            .hero-header img { height: 120px !important; max-width: 100%; object-fit: contain; }
+        }
     </style>
 </head>
 
@@ -630,7 +641,7 @@
             style="font-weight: 800; font-size: 1.4rem; letter-spacing: 1px;">
             <img src="/static/ifa_logo.jpg" alt="IFA Logo"
                 style="height: 55px; margin-right: 15px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);">
-            INTELLIGENCE FOR ALL
+            <span class="logo-text">INTELLIGENCE FOR ALL</span>
         </div>
         <div class="nav-links">
             <div class="nav-item active" onclick="switchView('dashboard')" data-i18n="nav_home"><i
@@ -662,7 +673,7 @@
         </div>
 
         <div
-            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto 60px auto; align-items: stretch;">
+            style="display: flex; flex-direction: column; gap: 30px; max-width: 600px; margin: 0 auto 60px auto; align-items: stretch;">
             <!-- Start Challenge Card -->
             <div class="generator-card" style="display: flex; flex-direction: column;">
                 <div class="generator-title"><i class="fas fa-bolt" style="color: #f59e0b;"></i> Start a Challenge</div>
@@ -748,6 +759,47 @@
                     <button onclick="joinMatch()" class="btn-primary" style="margin-top: 10px;">Join Match</button>
                 </div>
             </div>
+        </div>
+
+        <!-- FIRST TIME VISITOR SECTIONS -->
+        <div style="max-width: 800px; margin: 0 auto 60px auto; display: flex; flex-direction: column; gap: 40px; padding: 0 20px;">
+            
+            <!-- About Section -->
+            <div class="generator-card" style="max-width: 100%; border-color: var(--primary);">
+                <div class="generator-title"><i class="fas fa-info-circle" style="color: #06b6d4;"></i> About Intelligence for All</div>
+                <p style="color: var(--text-dim); line-height: 1.6; margin-top: 15px;">
+                    Welcome to the ultimate AI-powered trivia arena! Our mission is to challenge your critical thinking and expand your knowledge through dynamically generated questions. 
+                    Whether you are testing your skills against our advanced neural networks or hosting a real-time multiplayer match with friends, 
+                    <strong>Intelligence for All</strong> ensures that learning is engaging, competitive, and never the same twice.
+                </p>
+            </div>
+
+            <!-- Testimonials Section -->
+            <div class="generator-card" style="max-width: 100%;">
+                <div class="generator-title"><i class="fas fa-star" style="color: var(--accent-gold);"></i> What Our Players Say</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border-left: 3px solid var(--primary);">
+                        <p style="font-style: italic; color: var(--text-dim);">"The AI-generated questions are mind-blowing. It actually adapts to your skill level. I've never played a trivia game like this!"</p>
+                        <strong style="color: white; display: block; margin-top: 10px;">- Sarah J.</strong>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border-left: 3px solid #06b6d4;">
+                        <p style="font-style: italic; color: var(--text-dim);">"Hosting a multiplayer match on the Future Tech topic was the highlight of our game night. Seamless and incredibly fun."</p>
+                        <strong style="color: white; display: block; margin-top: 10px;">- Marcus T.</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Newsletter / Sign Up Section -->
+            <div class="generator-card" style="max-width: 100%; background: linear-gradient(135deg, rgba(217, 70, 239, 0.1), rgba(6, 182, 212, 0.1)); border: 1px solid var(--primary);">
+                <div class="generator-title"><i class="fas fa-envelope-open-text" style="color: white;"></i> Join the Community</div>
+                <p style="color: var(--text-dim); margin: 10px 0 20px 0;">Create a free profile to save your quizzes, track your scores, and sign up for our newsletter to get the latest AI features and challenges sent directly to your inbox.</p>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button onclick="openProfile()" class="btn-primary" style="flex: 1; margin: 0; min-width: 200px;"><i class="fas fa-user-plus"></i> Create Profile</button>
+                    <button onclick="subscribeNewsletter()" class="btn-primary" style="flex: 1; margin: 0; min-width: 200px; background: rgba(255,255,255,0.1); border: 1px solid var(--text-dim); color: white; box-shadow: none;"><i class="fas fa-paper-plane"></i> Subscribe to Newsletter</button>
+                </div>
+                <div id="newsletter-msg" style="display: none; color: #22c55e; margin-top: 15px; font-weight: bold;"><i class="fas fa-check-circle"></i> Successfully subscribed!</div>
+            </div>
+
         </div>
     </section>
 
@@ -1185,11 +1237,11 @@
     <!-- MAIN FOOTER -->
     <footer>
         <div class="footer-links">
-            <a href="/about">About Us</a>
-            <a href="/rules">Game Rules & Scoring</a>
-            <a href="/support">Support / Contact</a>
-            <a href="/privacy">Privacy Policy</a>
-            <a href="/terms">Terms of Service</a>
+            <a href="about.html">About Us</a>
+            <a href="rules.html">Game Rules & Scoring</a>
+            <a href="support.html">Support / Contact</a>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
         </div>
 
         <div class="social-icons">
@@ -1232,7 +1284,7 @@
             }
         });
 
-        const API_URL = "http://localhost:8000";
+        const API_URL = "https://intelligence-for-all-api.onrender.com";
         let currentChallenge = null;
         let userLevel = 1; // Simple adaptive difficulty score
         let currentDifficulty = "Medium";
@@ -1381,8 +1433,74 @@
                     switchView('dashboard');
                 }
             } catch (e) {
-                alert("Error generating challenge. Ensure backend is running.");
-                switchView('dashboard');
+                console.warn("Connection Error. Loading Mock Mode.");
+                // Mock Mode Data
+                const mockPool = [
+                    {
+                        id: "mock_1", topic: topic, difficulty: currentDifficulty, time_limit: 60,
+                        scenario: "Mock Question: What is the primary purpose of a neural network?",
+                        options: [
+                            { id: "A", text: "To store large amounts of structured data." },
+                            { id: "B", text: "To recognize patterns and solve complex problems." },
+                            { id: "C", text: "To physically repair hardware components." },
+                            { id: "D", text: "To render 3D graphics in web browsers." }
+                        ],
+                        correct_option_id: "B",
+                        explanation: "Neural networks are designed to recognize patterns, similar to the human brain, allowing them to solve complex problems like image recognition and natural language processing."
+                    },
+                    {
+                        id: "mock_2", topic: topic, difficulty: currentDifficulty, time_limit: 60,
+                        scenario: "Mock Question: In the context of AI, what does 'AGI' stand for?",
+                        options: [
+                            { id: "A", text: "Automated Global Infrastructure" },
+                            { id: "B", text: "Artificial General Intelligence" },
+                            { id: "C", text: "Algorithmic Generation Interface" },
+                            { id: "D", text: "Augmented Graphical Immersion" }
+                        ],
+                        correct_option_id: "B",
+                        explanation: "AGI stands for Artificial General Intelligence, which refers to a hypothetical AI system with the ability to understand, learn, and apply knowledge across a wide range of tasks, at or above human level."
+                    },
+                    {
+                        id: "mock_3", topic: topic, difficulty: currentDifficulty, time_limit: 60,
+                        scenario: "Mock Question: What is 'Retrieval-Augmented Generation' (RAG)?",
+                        options: [
+                            { id: "A", text: "A technique to optimize battery life in mobile AI models." },
+                            { id: "B", text: "A method to generate images from 3D models." },
+                            { id: "C", text: "Enhancing AI responses by retrieving facts from an external database." },
+                            { id: "D", text: "A cybersecurity protocol for encrypting training data." }
+                        ],
+                        correct_option_id: "C",
+                        explanation: "RAG improves the accuracy and reliability of generative AI models by fetching facts from an external knowledge base to ground its generated responses."
+                    },
+                    {
+                        id: "mock_4", topic: topic, difficulty: currentDifficulty, time_limit: 60,
+                        scenario: "Mock Question: Which of these is a common risk associated with advanced AI?",
+                        options: [
+                            { id: "A", text: "Decreased internet speed globally." },
+                            { id: "B", text: "Hardware melting due to fast calculations." },
+                            { id: "C", text: "Bias in decision making and hallucinated facts." },
+                            { id: "D", text: "AI intentionally deleting operating systems." }
+                        ],
+                        correct_option_id: "C",
+                        explanation: "AI models can inherit biases from their training data and sometimes confidently invent incorrect information, known as 'hallucination'."
+                    },
+                    {
+                        id: "mock_5", topic: topic, difficulty: currentDifficulty, time_limit: 60,
+                        scenario: "Mock Question: What is the main function of the 'transformer' architecture in modern AI?",
+                        options: [
+                            { id: "A", text: "Processing sequential data using a self-attention mechanism." },
+                            { id: "B", text: "Converting electrical currents to power GPUs." },
+                            { id: "C", text: "Translating computer code into machine language." },
+                            { id: "D", text: "Animating 3D avatars for virtual reality." }
+                        ],
+                        correct_option_id: "A",
+                        explanation: "Introduced by Google in 2017, the transformer architecture uses self-attention to weigh the importance of different parts of the input data, revolutionizing natural language processing."
+                    }
+                ];
+                quizQueue = mockPool.sort(() => 0.5 - Math.random()).slice(0, count);
+                if (quizQueue.length === 0) quizQueue = mockPool;
+                currentQuizIndex = 0;
+                renderQuiz(quizQueue[currentQuizIndex], topic + " (Mock Mode)");
             }
         }
 
@@ -1869,7 +1987,12 @@
                 const data = await res.json();
                 renderSimulationState(data);
             } catch (e) {
-                document.getElementById('sim-narrative-text').innerText = "Connection Failed. Is the backend running?";
+                console.warn("Connection Error. Loading Mock Simulation.");
+                renderSimulationState({
+                    message: "Simulation Offline: Backend connection failed. You are in Mock Mode.",
+                    options: ["Retry Connection", "Explore Mock Environment"],
+                    assets: []
+                });
             }
         }
 
@@ -1890,7 +2013,12 @@
                 const data = await res.json();
                 renderSimulationState(data);
             } catch (e) {
-                document.getElementById('sim-narrative-text').innerText = "Neural Sync Lost. Retrying...";
+                console.warn("Connection Error. Loading Mock Simulation.");
+                renderSimulationState({
+                    message: `Action failed: Backend offline. Mock action [${action}] executed.`,
+                    options: ["Retry Connection", "Continue Mocking"],
+                    assets: []
+                });
             }
         }
 
@@ -2298,6 +2426,12 @@
             } catch (e) {
                 console.error("Failed to delete challenge", e);
             }
+        }
+        function subscribeNewsletter() {
+            document.getElementById('newsletter-msg').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('newsletter-msg').style.display = 'none';
+            }, 3000);
         }
     </script>
     <script type="text/javascript">

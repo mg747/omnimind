@@ -3,7 +3,7 @@ import 'dart:async';
 
 class ApiService {
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://localhost:8000', // Emulator/Localhost
+    baseUrl: 'https://intelligence-for-all-api.onrender.com', // Live Cloud Backend
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
   ));
@@ -24,7 +24,11 @@ class ApiService {
       return response.data;
     } catch (e) {
       print('Error starting simulation: $e');
-      rethrow;
+      return {
+        'message': 'Simulation Offline: Backend connection failed. You are currently in Mock Mode.',
+        'options': ['Retry Connection', 'Continue in Mock Mode'],
+        'assets': []
+      };
     }
   }
 
@@ -38,7 +42,11 @@ class ApiService {
       return response.data;
     } catch (e) {
       print('Error performing action: $e');
-      rethrow;
+      return {
+        'message': 'Action failed: Backend offline. Mock action [$action] executed.',
+        'options': ['Retry Connection', 'Continue in Mock Mode'],
+        'assets': []
+      };
     }
   }
 
