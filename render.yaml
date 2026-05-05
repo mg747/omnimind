@@ -4,10 +4,7 @@ services:
     env: python
     rootDir: backend
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
     envVars:
       - key: PYTHON_VERSION
-        value: 3.10.12
-      # Add your GROQ API KEY here when setting up on the Render dashboard!
-      - key: GROQ_API_KEY
-        sync: false 
+        value: "3.10.12"
