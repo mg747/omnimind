@@ -11,3 +11,5 @@ langchain-community
 langchain-groq
 langchain-huggingface
 
+sqlalchemy
+websockets
