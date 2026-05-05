@@ -11,9 +11,13 @@ class Database:
         self.index_name = "omnimind-memory-pinecone" # New index for 1024 dimensions
         
         if self.api_key:
-            self.pc = Pinecone(api_key=self.api_key)
-            self._initialize_index()
-            self.index = self.pc.Index(self.index_name)
+            try:
+                self.pc = Pinecone(api_key=self.api_key)
+                self._initialize_index()
+                self.index = self.pc.Index(self.index_name)
+            except Exception as e:
+                print(f"Pinecone initialization failed: {e}. Running in stateless mode.")
+                self.index = None
         else:
             print("Warning: PINECONE_API_KEY not set. Running in stateless mode.")
             self.index = None
