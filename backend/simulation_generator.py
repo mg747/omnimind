@@ -74,23 +74,17 @@ class SimulationGenerator:
                     "action": action
                 })
                 # Robust JSON parsing
-                import re
-                
-                # Strip markdown code blocks if present
                 clean_json = response_str.strip()
-                if clean_json.startswith("```json"):
-                    clean_json = clean_json[7:]
-                if clean_json.startswith("```"):
-                    clean_json = clean_json[3:]
-                if clean_json.endswith("```"):
-                    clean_json = clean_json[:-3]
-                    
-                match = re.search(r'\{.*\}', clean_json, re.DOTALL)
-                if match:
-                    clean_json_extracted = match.group(0)
+                
+                # Find the outermost JSON object
+                start_idx = clean_json.find('{')
+                end_idx = clean_json.rfind('}')
+                
+                if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+                    clean_json_extracted = clean_json[start_idx:end_idx+1]
                     result = json.loads(clean_json_extracted)
                 else:
-                    raise ValueError("No JSON block found in response.")
+                    raise ValueError(f"No JSON block found in response: {clean_json}")
                 
                 # Save new memory
                 self.db.save_memory(self.session_id, f"Action: {action} -> Result: {result['message']}")
