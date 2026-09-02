@@ -54,33 +54,47 @@ class ChallengeGenerator:
             }}
         """)
 
-        chain = prompt | self.llm | StrOutputParser()
+        models_to_try = [
+            "llama-3.3-70b-versatile",
+            "llama-3.1-8b-instant",
+            "mixtral-8x7b-32768",
+            "gemma2-9b-it",
+            "llama-3.2-3b-preview"
+        ]
         
-        try:
-            response = chain.invoke({"topic": topics_prompt, "difficulty": difficulty, "count": count})
-            clean_json = response.strip()
-            # If the LLM still returns markdown blocks for some reason, remove them
-            if clean_json.startswith("```"):
-                clean_json = re.sub(r"^```(?:json)?\n|\n```$", "", clean_json)
+        last_error = None
+        for model_name in models_to_try:
+            try:
+                # Re-instantiate LLM with the current model in the loop
+                current_llm = ChatGroq(model=model_name, temperature=0.8, model_kwargs={"response_format": {"type": "json_object"}})
+                chain = prompt | current_llm | StrOutputParser()
+                response = chain.invoke({"topic": topics_prompt, "difficulty": difficulty, "count": count})
+                clean_json = response.strip()
+                # If the LLM still returns markdown blocks for some reason, remove them
+                if clean_json.startswith("```"):
+                    clean_json = re.sub(r"^```(?:json)?\n|\n```$", "", clean_json)
+                    
+                parsed = json.loads(clean_json)
+                challenges = parsed.get("challenges", [])
                 
-            parsed = json.loads(clean_json)
-            challenges = parsed.get("challenges", [])
-            
-            # Ensure we always return a list
-            if not isinstance(challenges, list):
-                challenges = [challenges]
+                # Ensure we always return a list
+                if not isinstance(challenges, list):
+                    challenges = [challenges]
+                    
+                time_limits = {"Beginner": 60, "Medium": 60, "Hard": 120, "Expert": 180}
+                default_limit = time_limits.get(difficulty, 60)
+                import uuid
+                for c in challenges:
+                    c["time_limit"] = default_limit
+                    c["id"] = f"challenge_{uuid.uuid4().hex[:8]}"
+                    
+                return challenges[:count] # Enforce count
+            except Exception as e:
+                print(f"Model {model_name} failed: {e}")
+                last_error = e
+                continue
                 
-            time_limits = {"Beginner": 60, "Medium": 60, "Hard": 120, "Expert": 180}
-            default_limit = time_limits.get(difficulty, 60)
-            import uuid
-            for c in challenges:
-                c["time_limit"] = default_limit
-                c["id"] = f"challenge_{uuid.uuid4().hex[:8]}"
-                
-            return challenges[:count] # Enforce count
-        except Exception as e:
-            print(f"Error generating challenge: {e}")
-            return self._fallback_challenge(topic, count, error=str(e))
+        return self._fallback_challenge(topic, count, error=str(last_error))
 
     def _fallback_challenge(self, topic, count, error=None):
         import uuid
