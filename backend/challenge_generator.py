@@ -80,22 +80,23 @@ class ChallengeGenerator:
             return challenges[:count] # Enforce count
         except Exception as e:
             print(f"Error generating challenge: {e}")
-            return self._fallback_challenge(topic, count)
+            return self._fallback_challenge(topic, count, error=str(e))
 
-    def _fallback_challenge(self, topic, count):
+    def _fallback_challenge(self, topic, count, error=None):
         import uuid
         fallbacks = []
         for i in range(count):
+            err_msg = f" Error Details: {error}" if error else ""
             fallbacks.append({
                 "id": f"fallback_{uuid.uuid4().hex[:8]}",
                 "title": f"Offline Challenge: {topic}",
-                "scenario": "The AI Core is currently offline. Please add your API Key to the backend/.env file to unlock infinite generation.",
+                "scenario": f"The AI Core is currently offline or encountered an error. Please check your API Key.{err_msg}",
                 "options": [
-                    { "id": "A", "text": "I will add the key now." },
+                    { "id": "A", "text": "I will check the logs." },
                     { "id": "B", "text": "I will continue in offline mode." }
                 ],
                 "correct_option_id": "A",
-                "explanation": "Without the API Key, the system cannot generate novel content.",
+                "explanation": f"System failed to generate content.{err_msg}",
                 "time_limit": 60
             })
         return fallbacks
