@@ -13,7 +13,7 @@ class SimulationGenerator:
         # Initialize LLM only if Groq key is present
         api_key = os.getenv("GROQ_API_KEY")
         if api_key:
-            self.llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0.7)
+            self.llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.7)
         else:
             print("Warning: GROQ_API_KEY not set. Using fallback logic.")
             self.llm = None
