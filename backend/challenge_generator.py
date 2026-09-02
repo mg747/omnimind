@@ -11,7 +11,7 @@ class ChallengeGenerator:
         # Groq Cloud API integration
         api_key = os.getenv("GROQ_API_KEY")
         if api_key:
-            self.llm = ChatGroq(model="llama3-8b-8192", temperature=0.8, model_kwargs={"response_format": {"type": "json_object"}})
+            self.llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0.8, model_kwargs={"response_format": {"type": "json_object"}})
         else:
             print("Warning: GROQ_API_KEY not set.")
             self.llm = None
