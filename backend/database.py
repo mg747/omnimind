@@ -3,8 +3,7 @@ class Database:
         self.memory = {}
 
     def retrieve_context(self, session_id: str, action: str) -> str:
-        return '
-'.join(self.memory.get(session_id, []))
+        return "\n".join(self.memory.get(session_id, []))
 
     def save_memory(self, session_id: str, memory_string: str):
         if session_id not in self.memory:
