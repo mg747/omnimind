@@ -72,8 +72,10 @@ class ChallengeGenerator:
                 
             time_limits = {"Beginner": 60, "Medium": 60, "Hard": 120, "Expert": 180}
             default_limit = time_limits.get(difficulty, 60)
+            import uuid
             for c in challenges:
                 c["time_limit"] = default_limit
+                c["id"] = f"challenge_{uuid.uuid4().hex[:8]}"
                 
             return challenges[:count] # Enforce count
         except Exception as e:
@@ -81,10 +83,11 @@ class ChallengeGenerator:
             return self._fallback_challenge(topic, count)
 
     def _fallback_challenge(self, topic, count):
+        import uuid
         fallbacks = []
         for i in range(count):
             fallbacks.append({
-                "id": f"fallback_{i}",
+                "id": f"fallback_{uuid.uuid4().hex[:8]}",
                 "title": f"Offline Challenge: {topic}",
                 "scenario": "The AI Core is currently offline. Please add your API Key to the backend/.env file to unlock infinite generation.",
                 "options": [
