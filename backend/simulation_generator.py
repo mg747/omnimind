@@ -16,7 +16,7 @@ class SimulationGenerator:
             self.llm = ChatOpenAI(
                 api_key=api_key,
                 base_url="https://api.x.ai/v1",
-                model="grok-2-latest", 
+                model="grok-4.6", 
                 temperature=0.7
             )
         else:

@@ -63,9 +63,8 @@ class ChallengeGenerator:
         """)
 
         models_to_try = [
-            "grok-2-latest",
-            "grok-beta",
-            "grok-2"
+            "grok-4.6",
+            "grok-4.5"
         ]
         
         last_error = None
