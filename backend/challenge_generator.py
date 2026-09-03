@@ -1,4 +1,4 @@
-from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 import json
@@ -8,13 +8,21 @@ import re
 
 class ChallengeGenerator:
     def __init__(self):
-        # Groq Cloud API integration
-        api_key = os.getenv("GROQ_API_KEY")
+        # xAI API integration
+        api_key = os.getenv("XAI_API_KEY") or os.getenv("GROQ_API_KEY")
         if api_key:
-            self.llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.8, model_kwargs={"response_format": {"type": "json_object"}})
+            self.llm = ChatOpenAI(
+                api_key=api_key,
+                base_url="https://api.x.ai/v1",
+                model="grok-beta", 
+                temperature=0.8,
+                model_kwargs={"response_format": {"type": "json_object"}}
+            )
+            self.api_key = api_key
         else:
-            print("Warning: GROQ_API_KEY not set.")
+            print("Warning: API key not set.")
             self.llm = None
+            self.api_key = None
 
     def generate_challenge(self, topic, difficulty: str, is_premium: bool = False, count: int = 1):
         if not self.llm:
@@ -55,18 +63,22 @@ class ChallengeGenerator:
         """)
 
         models_to_try = [
-            "llama-3.3-70b-versatile",
-            "llama-3.1-8b-instant",
-            "mixtral-8x7b-32768",
-            "gemma2-9b-it",
-            "llama-3.2-3b-preview"
+            "grok-2-latest",
+            "grok-beta",
+            "grok-2"
         ]
         
         last_error = None
         for model_name in models_to_try:
             try:
                 # Re-instantiate LLM with the current model in the loop
-                current_llm = ChatGroq(model=model_name, temperature=0.8, model_kwargs={"response_format": {"type": "json_object"}})
+                current_llm = ChatOpenAI(
+                    api_key=self.api_key,
+                    base_url="https://api.x.ai/v1",
+                    model=model_name, 
+                    temperature=0.8, 
+                    model_kwargs={"response_format": {"type": "json_object"}}
+                )
                 chain = prompt | current_llm | StrOutputParser()
                 response = chain.invoke({"topic": topics_prompt, "difficulty": difficulty, "count": count})
                 clean_json = response.strip()

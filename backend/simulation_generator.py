@@ -1,4 +1,4 @@
-from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from database import Database
@@ -10,12 +10,17 @@ import re
 class SimulationGenerator:
     def __init__(self):
         self.db = Database()
-        # Initialize LLM only if Groq key is present
-        api_key = os.getenv("GROQ_API_KEY")
+        # Initialize LLM only if xAI/Groq key is present
+        api_key = os.getenv("XAI_API_KEY") or os.getenv("GROQ_API_KEY")
         if api_key:
-            self.llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.7)
+            self.llm = ChatOpenAI(
+                api_key=api_key,
+                base_url="https://api.x.ai/v1",
+                model="grok-2-latest", 
+                temperature=0.7
+            )
         else:
-            print("Warning: GROQ_API_KEY not set. Using fallback logic.")
+            print("Warning: API key not set. Using fallback logic.")
             self.llm = None
         
         self.session_id = "demo_session" # In prod, this would be dynamic
