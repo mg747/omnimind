@@ -63,11 +63,12 @@ class ChallengeGenerator:
         """)
 
         models_to_try = [
-            "grok-4.6",
-            "grok-4.5"
+            "grok-2-latest",
+            "grok-beta",
+            "grok-2-1212"
         ]
         
-        last_error = None
+        all_errors = []
         for model_name in models_to_try:
             try:
                 # Re-instantiate LLM with the current model in the loop
@@ -102,10 +103,10 @@ class ChallengeGenerator:
                 return challenges[:count] # Enforce count
             except Exception as e:
                 print(f"Model {model_name} failed: {e}")
-                last_error = e
+                all_errors.append(f"{model_name}: {str(e)}")
                 continue
                 
-        return self._fallback_challenge(topic, count, error=str(last_error))
+        return self._fallback_challenge(topic, count, error=" | ".join(all_errors))
 
     def _fallback_challenge(self, topic, count, error=None):
         import uuid
